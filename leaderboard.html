@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المتصدرون والداعمون - انطلاقة</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/viewport/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* تنسيقات خاصة بصفحة المتصدرين لضمان المظهر الزجاجي الفخم */
+        .leaderboard-body {
+            background-color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px 0 20px;
+        }
+
+        .leaderboard-container {
+            width: 100%;
+            max-width: 1000px; /* زيادة العرض قليلاً ليستوعب القائمتين جنباً إلى جنب */
+            background: rgba(232, 245, 233, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 50px;
+            z-index: 5;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            font-size: 1.8rem;
+        }
+
+        .column-subtitle {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* تنسيق جدول الصدارة */
+        .leader-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 12px;
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .leader-row:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .leader-rank-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .leader-rank {
+            font-weight: 900;
+            font-size: 1.1rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #fff;
+        }
+
+        /* تمييز الـ 3 الأوائل داخل الجدول */
+        .rank-1 { background: linear-gradient(45deg, #FFD700, #FFA500); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .rank-2 { background: linear-gradient(45deg, #C0C0C0, #808080); box-shadow: 0 0 10px rgba(192, 192, 192, 0.5); }
+        .rank-3 { background: linear-gradient(45deg, #CD7F32, #8B4513); box-shadow: 0 0 10px rgba(205, 127, 50, 0.5); }
+        .rank-other { background: rgba(255,255,255,0.2); }
+
+        .leader-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .leader-name {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 0.95rem;
+        }
+
+        .leader-energy-badge {
+            background: rgba(52, 142, 56, 0.3);
+            border: 1px solid var(--primary);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        /* تنسيقات شارات الـ VIP لأقوى الداعمين */
+        .vip-badge {
+            background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+            border: 1px solid #ffffff !important;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+            animation: pulse-vip 2s infinite alternate;
+        }
+
+        @keyframes pulse-vip {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* زر العودة للصفحة الرئيسية */
+        .back-home-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+            padding: 8px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .back-home-btn:hover {
+            background: #ffffff;
+            color: var(--dark) !important;
+            transform: translateX(-5px);
+        }
+
+        /* ================= شريط الرعاة اللانهائي (Sponsors Ticker) ================= */
+        .sponsors-ticker-container {
+            width: 100vw;
+            background: rgba(15, 66, 41, 0.9);
+            border-top: 2px solid rgba(52, 142, 56, 0.3);
+            padding: 15px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* حاوية الحركة اللانهائية */
+        .ticker-wrapper {
+            display: flex;
+            width: max-content;
+            animation: tickerSlide 25s linear infinite;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 40px;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .sponsor-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            filter: grayscale(100%) brightness(200%); /* توحيد لون الشعارات باللون الأبيض لجمالية التصميم */
+            transition: filter 0.3s;
+        }
+
+        .sponsor-logo:hover {
+            filter: none; /* يعود للونه الأصلي عند التمرير عليه */
+        }
+
+        /* أنيميشن حركة الشريط اللانهائية بسلاسة */
+        @keyframes tickerSlide {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(50%); /* يتحرك بنصف العرض لضمان دوران تكراري ممتاز */
+            }
+        }
+
+        /* ================= تنسيق شريط شبكات التواصل الاجتماعي (Topbar) ================= */
+
+/* تنسيق النصوص والخطوط داخل الشريط العلوي */
+.col-lg-5 span {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* تنسيق أزرار مواقع التواصل (الروابط) */
+.col-lg-5 .btn-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 1.1rem;
+    padding: 6px 10px;
+    text-decoration: none !important;
+    transition: color 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+}
+
+/* تأثير التمرير (Hover) على الأيقونات */
+.col-lg-5 .btn-link:hover {
+    transform: translateY(-3px) scale(1.15);
+}
+
+/* تخصيص تأثيرات هوفر مميزة لكل منصة بناءً على ألوانها */
+.col-lg-5 .btn-link:hover .fa-linkedin {
+    color: #0077b5 !important; /* لون لينكد إن */
+    filter: drop-shadow(0 0 8px rgba(0, 119, 181, 0.6));
+}
+
+.col-lg-5 .btn-link:hover .bi-tiktok, 
+.col-lg-5 .btn-link:hover svg {
+    color: #ff0050 !important; /* لون تيك توك */
+    filter: drop-shadow(0 0 8px rgba(255, 0, 80, 0.6));
+}
+
+.col-lg-5 .btn-link:hover .fa-telegram-plane {
+    color: #0088cc !important; /* لون تليجرام */
+    filter: drop-shadow(0 0 8px rgba(0, 136, 204, 0.6));
+}
+
+/* تباعد خفيف بين الأيقونات */
+.mx-n2 > a {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+    </style>
+</head>
+
+
+<body class="leaderboard-body">
+
+<!-- شبكات التواصل الاجتماعي -->
+
+<div class="col-lg-5 px-5 text-end">
+
+<div class="h-100 d-inline-flex align-items-center mx-n2">
+
+<span class="ms-2">تابعنا على:</span>
+
+<!-- لينكد إن -->
+
+<a class="btn btn-link text-light" href="https://www.linkedin.com/company/hpc11/" target="_blank"><i class="fab fa-linkedin"></i></a>
+
+
+<!-- تيك توك باستخدام SVG ناعم ومضمون الظهور فوراً بنفس الحجم والألوان -->
+
+<a class="btn btn-link text-light d-inline-flex align-items-center justify-content-center" href="https://www.tiktok.com/@hpc384?_r=1&_t=ZS-97wT968vCTQ" target="_blank" style="width: 38px; height: 38px;">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tiktok" viewBox="0 0 16 16">
+
+<path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
+
+</svg>
+
+</a>
+
+
+
+<!-- تليجرام -->
+
+<a class="btn btn-link text-light" href="https://t.me/HPC_earning" target="_blank"><i class="fab fa-telegram-plane"></i></a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Topbar End -->
+
+
+<body class="leaderboard-body">
+
+    <a href="index.html" class="back-home-btn">
+        <i class="fa-solid fa-arrow-right ms-2"></i> الرئيسية
+    </a>
+
+    <div class="container leaderboard-container mt-5">
+        <h2 class="section-title">🏆 لوحة الصدارة والدعم 🏆</h2>
+        <hr style="border-color: rgba(255,255,255,0.15); margin-bottom: 30px;">
+
+        <div class="row g-4">
+            
+            <div class="col-md-6">
+                <h3 class="column-subtitle"><i class="fa-solid fa-bolt text-warning me-2"></i> أبطال الطاقة</h3>
+                <div id="leaderboard-list">
+                    
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-1">1</span>
+                            <img src="img/carousel2-3.png" class="leader-img" alt="أحمد">
+                            <span class="leader-name">أحمد العتيبي 🥇</span>
+                        </div>
+                        <span class="leader-energy-badge">⚡ 5200w</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-2">2</span>
+                            <img src="img/carousel2-1.png" class="leader-img" alt="سارة">
+                            <span class="leader-name">سارة محمد 🥈</span>
+                        </div>
+                        <span class="leader-energy-badge">⚡ 4800w</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-3">3</span>
+                            <img src="img/carousel2-2.png" class="leader-img" alt="خالد">
+                            <span class="leader-name">خالد الشمري 🥉</span>
+                        </div>
+                        <span class="leader-energy-badge">⚡ 4100w</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-other">4</span>
+                            <img src="img/carousel2-1.png" class="leader-img" alt="نورة">
+                            <span class="leader-name">نورة القحطاني</span>
+                        </div>
+                        <span class="leader-energy-badge">⚡ 3900w</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-other">5</span>
+                            <img src="img/carousel2-3.png" class="leader-img" alt="فيصل">
+                            <span class="leader-name">فيصل الحربي</span>
+                        </div>
+                        <span class="leader-energy-badge">⚡ 3500w</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h3 class="column-subtitle"><i class="fa-solid fa-crown text-warning me-2"></i> أقوى الداعمين</h3>
+                <div id="supporters-list">
+                    
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-1"><i class="fa-solid fa-gem"></i></span>
+                            <img src="img/carousel2-3.png" class="leader-img" alt="داعم 1">
+                            <span class="leader-name">عبدالعزيز بن خالد</span>
+                        </div>
+                        <span class="leader-energy-badge vip-badge"><i class="fa-solid fa-star ms-1"></i> VIP مشترك</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-2"><i class="fa-solid fa-gem"></i></span>
+                            <img src="img/carousel2-1.png" class="leader-img" alt="داعم 2">
+                            <span class="leader-name">مها عبدالله</span>
+                        </div>
+                        <span class="leader-energy-badge vip-badge"><i class="fa-solid fa-star ms-1"></i> VIP مشترك</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-3"><i class="fa-solid fa-gem"></i></span>
+                            <img src="img/carousel2-2.png" class="leader-img" alt="داعم 3">
+                            <span class="leader-name"> Max</span>
+                        </div>
+                        <span class="leader-energy-badge vip-badge"><i class="fa-solid fa-star ms-1"></i> VIP مشترك</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-other"><i class="fa-solid fa-heart text-danger"></i></span>
+                            <img src="img/carousel2-3.png" class="leader-img" alt="داعم 4">
+                            <span class="leader-name">عبدالرحمن العلي</span>
+                        </div>
+                        <span class="leader-energy-badge vip-badge"><i class="fa-solid fa-star ms-1"></i> VIP مشترك</span>
+                    </div>
+
+                    <div class="leader-row">
+                        <div class="leader-rank-info">
+                            <span class="leader-rank rank-other"><i class="fa-solid fa-heart text-danger"></i></span>
+                            <img src="img/carousel2-1.png" class="leader-img" alt="داعم 5">
+                            <span class="leader-name">هند المطيري</span>
+                        </div>
+                        <span class="leader-energy-badge vip-badge"><i class="fa-solid fa-star ms-1"></i> VIP مشترك</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="sponsors-ticker-container">
+        <div class="ticker-wrapper" dir="ltr">
+            
+            <div class="ticker-item">
+                <img src="img/logo2.png" class="sponsor-logo" alt="راعي">
+                <span> نايك</span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo3.png" class="sponsor-logo" alt="راعي">
+                <span>وزارة الطاقة</span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo4.png" class="sponsor-logo" alt="راعي">
+                <span>الرياض الخضراء</span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo5.png" class="sponsor-logo" alt="راعي">
+                <span>  منشآت</span>
+            </div>
+
+            <div class="ticker-item">
+                <img src="img/logo6.png" class="sponsor-logo" alt="راعي">
+                <span></span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo7.png" class="sponsor-logo" alt="راعي">
+                <span> StarBucks</span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo8.png" class="sponsor-logo" alt="راعي">
+                <span>مدينة الملك فهد الطبية  </span>
+            </div>
+            <div class="ticker-item">
+                <img src="img/logo9.png" class="sponsor-logo" alt="راعي">
+                <span>KAUST</span>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
