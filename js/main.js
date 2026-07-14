@@ -1,136 +1,174 @@
-(function ($) {
-    "use strict";
-
-    // Spinner
-    var spinner = function () {
-        setTimeout(function () {
-            if ($('#spinner').length > 0) {
-                $('#spinner').removeClass('show');
-            }
-        }, 1);
-    };
-    spinner(0);
+/**
+ * 🌟 المحرك البرمجي الموحد لصفحة انطلاقة HPC (خالٍ من الأخطاء والتعارضات)
+ */
+document.addEventListener("DOMContentLoaded", function () {
     
-    
-    // Initiate the wowjs
-    new WOW().init();
+    const container = document.getElementById('bubbles-container');
 
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 45) {
-            $('.navbar').addClass('sticky-top shadow-sm');
+    // 🏆 قائمة الأبطال المتصدرين لشحن الطاقة
+    const topChargers = [
+        { name: "أحمد العتيبي", energy: "⚡ 5200w", img: "img/carousel2-3.png" },
+        { name: "سارة محمد", energy: "⚡ 4800w", img: "img/carousel2-1.png" },
+        { name: "خالد الشمري", energy: "⚡ 4100w", img: "img/carousel2-3.png" },
+        { name: "نورة القحطاني", energy: "⚡ 3900w", img: "img/carousel2-1.png" },
+        { name: "فيصل الحربي", energy: "⚡ 3500w", img: "img/carousel2-2.png" }
+    ];
+
+    // دالة إنشاء وتطيير الفقاعات الصغيرة مع تمييز وتكبير المراكز الثلاثة الأولى
+    function createBubble(user, userIndex) {
+        if (!container) return;
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('floating-bubble');
+
+        let badgeHTML = '';
+        let rankClass = '';
+        let size = 0;
+
+        // تحديد الشارة، كلاس التميز، والمقاس الأكبر للمراكز الثلاثة الأولى
+        if (userIndex === 0) {
+            rankClass = 'first-place';
+            badgeHTML = `<span class="rank-badge gold-badge">🥇 الأول</span>`;
+            size = Math.floor(Math.random() * 10) + 120; // حجم مميز كبير جداً (120px - 130px)
+        } else if (userIndex === 1) {
+            rankClass = 'second-place';
+            badgeHTML = `<span class="rank-badge silver-badge">🥈 الثاني</span>`;
+            size = Math.floor(Math.random() * 10) + 110; // حجم مميز كبير (110px - 120px)
+        } else if (userIndex === 2) {
+            rankClass = 'third-place';
+            badgeHTML = `<span class="rank-badge bronze-badge">🥉 الثالث</span>`;
+            size = Math.floor(Math.random() * 10) + 100; // حجم مميز متوسط-كبير (100px - 110px)
         } else {
-            $('.navbar').removeClass('sticky-top shadow-sm');
+            size = Math.floor(Math.random() * 15) + 75; // الحجم الطبيعي لباقي الفقاعات العادية (75px - 90px)
         }
-    });
 
-
-    // Hero Header carousel
-    $(".header-carousel").owlCarousel({
-        animateOut: 'fadeOut',
-        items: 1,
-        margin: 0,
-        stagePadding: 0,
-        autoplay: true,
-        smartSpeed: 500,
-        dots: true,
-        loop: true,
-        nav : true,
-        navText : [
-            '<i class="bi bi-arrow-left"></i>',
-            '<i class="bi bi-arrow-right"></i>'
-        ],
-    });
-
-
-    // attractions carousel
-    $(".blog-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1500,
-        center: false,
-        dots: false,
-        loop: true,
-        margin: 25,
-        nav : true,
-        navText : [
-            '<i class="fa fa-angle-right"></i>',
-            '<i class="fa fa-angle-left"></i>'
-        ],
-        responsiveClass: true,
-        responsive: {
-            0:{
-                items:1
-            },
-            576:{
-                items:1
-            },
-            768:{
-                items:2
-            },
-            992:{
-                items:2
-            },
-            1200:{
-                items:3
-            }
+        if (rankClass) {
+            bubble.classList.add(rankClass);
         }
-    });
 
+        bubble.innerHTML = `
+            ${badgeHTML}
+            <img src="${user.img}" class="bubble-avatar" alt="${user.name}">
+            <div class="bubble-info">
+                ${user.name}
+                <span class="bubble-energy">${user.energy}</span>
+            </div>
+        `;
 
-    // testimonial carousel
-    $(".testimonial-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1500,
-        center: false,
-        dots: true,
-        loop: true,
-        margin: 25,
-        nav : true,
-        navText : [
-            '<i class="fa fa-angle-right"></i>',
-            '<i class="fa fa-angle-left"></i>'
-        ],
-        responsiveClass: true,
-        responsive: {
-            0:{
-                items:1
-            },
-            576:{
-                items:1
-            },
-            768:{
-                items:2
-            },
-            992:{
-                items:2
-            },
-            1200:{
-                items:3
-            }
-        }
-    });
+        const leftPosition = Math.random() * 90; 
+        const animationDuration = Math.random() * 6 + 9; 
+        const swayDuration = Math.random() * 2 + 3; 
+        const delay = Math.random() * 3; 
 
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${leftPosition}%`;
+        bubble.style.animationDuration = `${animationDuration}s, ${swayDuration}s`;
+        bubble.style.animationDelay = `${delay}s`;
 
-    // Facts counter
-    $('[data-toggle="counter-up"]').counterUp({
-        delay: 5,
-        time: 2000
-    });
+        container.appendChild(bubble);
 
-
-   // Back to top button
-   $(window).scroll(function () {
-    if ($(this).scrollTop() > 300) {
-        $('.back-to-top').fadeIn('slow');
-    } else {
-        $('.back-to-top').fadeOut('slow');
+        setTimeout(() => {
+            bubble.remove();
+        }, (animationDuration + delay) * 1000);
     }
+
+    let index = 0;
+    function spawnLoop() {
+        if (topChargers.length > 0) {
+            // نمرر الـ index الحالي للدالة لكي تتعرف على الترتيب
+            createBubble(topChargers[index], index);
+            index = (index + 1) % topChargers.length;
+        }
+        setTimeout(spawnLoop, 2500);
+    }
+
+    // 🌟 تم الإصلاح هنا: تشغيل حلقة الفقاعات بمجرد تحميل الصفحة 🌟
+    if (container) {
+        spawnLoop();
+    }
+
+    // حركة الخلفية الكبيرة الكاروسيل
+    const bgCarouselItems = document.querySelectorAll('#bg-carousel .carousel-item');
+    if (bgCarouselItems.length > 1) {
+        let bgIndex = 0;
+        setInterval(() => {
+            bgCarouselItems[bgIndex].classList.remove('active');
+            bgIndex = (bgIndex + 1) % bgCarouselItems.length;
+            bgCarouselItems[bgIndex].classList.add('active');
+        }, 2000);
+    }
+
+    // حركة الصور داخل الدوائر
+    const circleCarousels = document.querySelectorAll('.circle-bg-carousel');
+    circleCarousels.forEach(carousel => {
+        const circleImages = carousel.querySelectorAll('img');
+        if (circleImages.length > 1) {
+            let circleIndex = 0;
+            setInterval(() => {
+                circleImages[circleIndex].classList.remove('active');
+                circleIndex = (circleIndex + 1) % circleImages.length;
+                circleImages[circleIndex].classList.add('active');
+            }, 3000);
+        }
     });
-    $('.back-to-top').click(function () {
-        $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
-        return false;
+});
+
+// دالة الانتقال والتأثيرات عند النقر (يجب أن تكون خارج DOMContentLoaded لتتمكن أزرار الـ HTML من قراءتها)
+function navigateToPage(pageUrl, element) {
+    if (!element) return;
+
+    const container = document.getElementById('mainContainer');
+    const allCircles = document.querySelectorAll('.interactive-circle');
+    const mainTitle = document.querySelector('.main-title');
+    const shareBtn = document.querySelector('.share-success-btn');
+
+    if (element.classList.contains('interactive-circle')) {
+        element.classList.add('pop-effect');
+    }
+
+    if (container) {
+        container.classList.add('spinning-effect');
+    }
+
+    if(mainTitle) mainTitle.classList.add('fade-out-element');
+    if(shareBtn) shareBtn.classList.add('fade-out-element');
+
+    allCircles.forEach(circle => {
+        if (circle !== element) {
+            circle.classList.add('fade-out-element');
+        }
     });
 
+    setTimeout(() => {
+        if (element.classList.contains('interactive-circle')) {
+            element.classList.add('selected-grow');
+        } else {
+            element.classList.add('fade-out-element');
+        }
+    }, 400);
 
-})(jQuery);
+    setTimeout(() => {
+        window.location.href = pageUrl;
+    }, 900);
+}
 
+// إعادة تصفير الحركات عند العودة للخلف (Back)
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        const container = document.getElementById('mainContainer');
+        const allCircles = document.querySelectorAll('.interactive-circle');
+        const mainTitle = document.querySelector('.main-title');
+        const shareBtn = document.querySelector('.share-success-btn');
+
+        if (container) container.classList.remove('spinning-effect');
+        if (mainTitle) mainTitle.classList.remove('fade-out-element');
+        if (shareBtn) shareBtn.classList.remove('fade-out-element');
+
+        allCircles.forEach(circle => {
+            circle.classList.remove('fade-out-element');
+            circle.classList.remove('selected-grow');
+            circle.classList.remove('pop-effect');
+        });
+    }
+});
