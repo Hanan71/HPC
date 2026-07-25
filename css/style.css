@@ -1,0 +1,894 @@
+/********** ألوان الهوية الأساسية **********/
+:root {
+    --primary: #348E38;
+    --secondary: #525368;
+    --light: #E8F5E9;
+    --dark: #0F4229;
+}
+
+/* ── Global reset ── */
+html {
+    overflow-x: hidden;
+}
+
+/* FIX 1: body is now a plain block — no flex centering, no padding.
+   The hero section handles its own centering internally. */
+body {
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    display: block;
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Hero section — full-viewport containing block.
+   All absolutely-positioned children (bg, bubbles, buttons,
+   title) are scoped here and cannot leak over the leaderboard.
+   ═══════════════════════════════════════════════════════════ */
+#hero-section {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* FIX 2: background carousel is now absolute inside hero —
+   it no longer bleeds visually past the hero boundary. */
+#bg-carousel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none !important;
+}
+
+#bg-carousel .carousel-inner,
+#bg-carousel .carousel-item {
+    width: 100%;
+    height: 100%;
+    pointer-events: none !important;
+}
+
+/* FIX 9: use 100% instead of 100vh so the image fills its
+   absolutely-positioned parent correctly. */
+.bg-carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+/* ── Hero content — fills hero, centres the pyramid ── */
+.hero-content {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ── Left action group ── */
+.left-action-group {
+    position: absolute;
+    top: clamp(12px, 2.5vw, 20px);
+    left: clamp(12px, 2.5vw, 20px);
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 12px);
+    z-index: 10;
+}
+
+/* Circular "Join Us Success" glassmorphic button */
+.share-success-btn {
+    width:  clamp(62px, 9.5vw, 90px);
+    height: clamp(62px, 9.5vw, 90px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(7px, 1.2vw, 10px);
+    font-weight: 700;
+    font-size: clamp(0.65rem, 1.1vw, 0.85rem);
+    color: #ffffff !important;
+    text-decoration: none !important;
+    user-select: none;
+    cursor: pointer;
+    background: rgba(232, 245, 233, 0.15) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3),
+                inset 0 4px 10px rgba(255, 255, 255, 0.2);
+    z-index: 10;
+    pointer-events: auto !important;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                border-color 0.4s, box-shadow 0.4s;
+}
+
+.share-success-btn:hover {
+    transform: translateY(-5px) scale(1.1) rotate(5deg);
+    border-color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.7),
+                0 15px 30px rgba(0, 0, 0, 0.4),
+                inset 0 4px 10px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ── Main title ── */
+.main-title {
+    position: absolute;
+    top: clamp(12px, 2.5vw, 3vw);
+    right: clamp(12px, 2.5vw, 3vw);
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    font-size: clamp(1.1rem, calc(0.8rem + 2.5vw), 3.5rem);
+    font-weight: 900;
+    color: var(--light) !important;
+    text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                color 0.3s ease, opacity 0.5s ease;
+}
+
+.main-title:hover {
+    transform: scale(1.1) rotate(-2deg);
+    color: var(--primary) !important;
+}
+
+.main-title:hover i.fa-bolt {
+    color: #ffc107 !important;
+}
+
+/* ── Pyramid of circles ── */
+.pyramid-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4vw;
+    width: 100%;
+    max-width: 800px;
+    padding: 0 15px;
+    position: relative;
+    z-index: 5;
+}
+
+.top-row, .bottom-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    gap: 5vw;
+    flex-wrap: nowrap;
+    transition: all 0.5s ease;
+}
+
+.interactive-circle {
+    width: 25vw;
+    height: 25vw;
+    max-width: 220px;
+    max-height: 220px;
+    min-width: 120px;
+    min-height: 120px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none !important;
+    color: #ffffff !important;
+    z-index: 6;
+    pointer-events: auto !important;
+    background: rgba(232, 245, 233, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 3px solid rgba(52, 142, 56, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
+                inset 0 4px 10px rgba(255, 255, 255, 0.2);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                border-color 0.4s, box-shadow 0.4s, opacity 0.4s ease-out;
+}
+
+.highlight-circle {
+    border-color: rgba(255, 193, 7, 0.6) !important;
+    box-shadow: 0 15px 35px rgba(255, 193, 7, 0.15),
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                inset 0 4px 10px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Hover animations */
+@keyframes whiteFlashEffect {
+    0%   { border-color: rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(255,255,255,0.2), 0 15px 35px rgba(0,0,0,0.3); }
+    50%  { border-color: rgba(255,255,255,1);   box-shadow: 0 20px 50px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4), 0 15px 35px rgba(0,0,0,0.3); }
+    100% { border-color: rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(255,255,255,0.3), 0 15px 35px rgba(0,0,0,0.3); }
+}
+
+@keyframes goldFlashEffect {
+    0%   { border-color: rgba(255,193,7,0.6); box-shadow: 0 20px 40px rgba(255,193,7,0.2), 0 15px 35px rgba(0,0,0,0.3); }
+    50%  { border-color: rgba(255,193,7,1);   box-shadow: 0 20px 50px rgba(255,193,7,0.8), inset 0 0 15px rgba(255,193,7,0.5), 0 15px 35px rgba(0,0,0,0.3); }
+    100% { border-color: rgba(255,193,7,0.6); box-shadow: 0 20px 40px rgba(255,193,7,0.3), 0 15px 35px rgba(0,0,0,0.3); }
+}
+
+.interactive-circle:hover:not(.selected-grow) {
+    transform: translateY(-12px) scale(1.12);
+    animation: whiteFlashEffect 0.8s ease-in-out infinite;
+    pointer-events: auto !important;
+}
+
+.interactive-circle.highlight-circle:hover:not(.selected-grow) {
+    transform: translateY(-12px) scale(1.12);
+    animation: goldFlashEffect 0.8s ease-in-out infinite;
+    pointer-events: auto !important;
+}
+
+/* Click pop effect */
+.interactive-circle.pop-effect {
+    transform: scale(1.9) !important;
+    opacity: 0 !important;
+    transition: transform 0.35s cubic-bezier(0.1, 0.8, 0.3, 1),
+                opacity 0.35s ease-out, box-shadow 0.35s ease-out !important;
+    pointer-events: none !important;
+    z-index: 99999 !important;
+}
+
+.interactive-circle.pop-effect:not(.highlight-circle) {
+    box-shadow: 0 0 120px rgba(255,255,255,1),
+                inset 0 0 50px rgba(255,255,255,0.8) !important;
+}
+
+.interactive-circle.pop-effect.highlight-circle {
+    box-shadow: 0 0 120px rgba(255,193,7,1),
+                inset 0 0 50px rgba(255,193,7,0.8) !important;
+}
+
+.interactive-circle.pop-effect .circle-text {
+    opacity: 0 !important;
+    transform: scale(0.7) !important;
+    transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.circle-text {
+    position: relative;
+    z-index: 20;
+    font-weight: 700;
+    font-size: calc(0.55rem + 0.9vw);
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
+
+.circle-bg-carousel {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.circle-bg-carousel img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    filter: brightness(0.4) contrast(1.1);
+    transition: opacity 1s ease-in-out;
+    pointer-events: none;
+}
+
+.circle-bg-carousel img.active {
+    opacity: 1;
+}
+
+/* Navigation animations */
+.spinning-effect {
+    animation: orbitRotate 0.8s ease-in-out forwards;
+}
+
+@keyframes orbitRotate {
+    0%   { transform: rotate(0deg) scale(1); }
+    50%  { transform: rotate(180deg) scale(0.8); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.selected-grow {
+    position: relative;
+    z-index: 9999;
+    transform: scale(2.5) !important;
+    opacity: 0;
+    transition: transform 0.8s ease-out, opacity 0.8s ease-out !important;
+}
+
+.fade-out-element {
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: opacity 0.4s ease !important;
+}
+
+/* FIX 3: bubbles container is now absolute inside #hero-section,
+   so bubbles are clipped to the hero viewport and never float
+   over the leaderboard section when the user scrolls. */
+#bubbles-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.floating-bubble {
+    position: absolute;
+    bottom: -120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25),
+                inset 0 2px 5px rgba(255, 255, 255, 0.4) !important;
+    padding: 8px;
+    pointer-events: none;
+    animation: floatUp 12s linear infinite, sway 4s ease-in-out infinite alternate;
+}
+
+.bubble-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.bubble-info {
+    color: #ffffff !important;
+    font-size: 0.65rem;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    margin-top: 4px;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+    white-space: nowrap;
+}
+
+.bubble-energy {
+    font-size: 0.55rem;
+    color: #ffc107 !important;
+    display: block;
+}
+
+@keyframes floatUp {
+    0%   { transform: translateY(0);       opacity: 0;    }
+    10%  {                                 opacity: 0.95; }
+    90%  {                                 opacity: 0.95; }
+    100% { transform: translateY(-115vh);  opacity: 0;    }
+}
+
+@keyframes sway {
+    0%   { margin-left: -20px; }
+    100% { margin-left:  20px; }
+}
+
+/* ── Error banner ── */
+#leaderboard-error-banner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: rgba(180, 50, 30, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1.5px solid rgba(255, 120, 80, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    max-width: 90vw;
+    text-align: center;
+    animation: errorBannerIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    pointer-events: auto;
+}
+
+@keyframes errorBannerIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.92); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1);    }
+}
+
+.leaderboard-error-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0 0 4px;
+    margin-inline-start: 8px;
+    transition: color 0.2s;
+}
+.leaderboard-error-close:hover { color: #fff; }
+
+/* ── Join community pill ── */
+.join-community-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 136, 204, 0.15);
+    border: 1px solid rgba(0, 204, 65, 0.4);
+    color: #ffffff !important;
+    padding: clamp(6px, 1vw, 8px) clamp(11px, 2vw, 18px);
+    border-radius: 30px;
+    text-decoration: none !important;
+    font-weight: 700;
+    font-size: clamp(0.62rem, 1.1vw, 0.7rem);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 136, 204, 0.2);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* ── Direction-aware back arrow ──
+   In LTR "back" points left; flip the RTL-default right arrow. */
+[dir="ltr"] .back-arrow {
+    display: inline-block;
+    transform: scaleX(-1);
+}
+
+.join-community-btn:hover {
+    background: #3d7556;
+    border-color: #73d8a1;
+    box-shadow: 0 0 15px rgba(149, 232, 178, 0.6);
+    transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Language Toggle Button — matches site green palette
+   ═══════════════════════════════════════════════════════ */
+.lang-toggle-btn {
+    position: fixed;
+    top: auto;
+    bottom: 22px;        /* mobile: sits below the circles */
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    z-index: 99999;
+    visibility: visible !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: 1.5px solid rgba(52, 142, 56, 0.75);
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    background: rgba(15, 66, 41, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(52, 142, 56, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease, border-color 0.3s ease,
+                box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.lang-toggle-btn .fa-globe {
+    color: #7ee88a;
+    font-size: 1em;
+}
+
+.lang-toggle-btn:hover {
+    background: rgba(52, 142, 56, 0.55);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(52, 142, 56, 0.55),
+                0 8px 24px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px) scale(1.05);
+}
+
+.lang-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.lang-toggle-btn .lang-label {
+    min-width: 26px;
+    text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Leaderboard section — normal document flow below the hero
+   ═══════════════════════════════════════════════════════════════ */
+.leaderboard-section {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 0;
+    background-color: var(--dark);
+}
+
+/* Social links bar */
+.social-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* "Follow us" label + icons cluster */
+.social-follow-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Inline login button inside social bar */
+.social-login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(52,142,56,0.18);
+    border: 1px solid rgba(126,232,138,0.35);
+    color: #7ee88a !important;
+    padding: 7px 18px;
+    border-radius: 30px;
+    text-decoration: none !important;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.social-login-btn:hover {
+    background: rgba(52,142,56,0.38);
+    border-color: rgba(126,232,138,0.65);
+    transform: translateY(-2px);
+    color: #a8f5ae !important;
+}
+.social-login-btn i { font-size: 0.9em; }
+
+@media (max-width: 480px) {
+    .social-bar { justify-content: center; gap: 10px; }
+    .social-login-btn span.social-login-text { display: none; }
+    .social-login-btn { padding: 8px 12px; gap: 0; }
+}
+
+.social-icons {
+    display: flex;
+    align-items: center;
+}
+
+.social-icon-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 1.1rem;
+    padding: 6px 10px;
+    text-decoration: none !important;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icon-link:hover {
+    transform: translateY(-3px) scale(1.15);
+    color: #fff !important;
+}
+
+/* Glassmorphic table container */
+.lb-container {
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(232, 245, 233, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.lb-section-title {
+    color: #fff;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    font-size: 1.8rem;
+}
+
+.lb-col-subtitle {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.lb-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 12px;
+    padding: 12px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.lb-row:hover {
+    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.lb-rank-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lb-rank {
+    font-weight: 900;
+    font-size: 1.1rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+}
+
+.rank-1     { background: linear-gradient(45deg, #FFD700, #FFA500); box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+.rank-2     { background: linear-gradient(45deg, #C0C0C0, #808080); box-shadow: 0 0 10px rgba(192,192,192,0.5); }
+.rank-3     { background: linear-gradient(45deg, #CD7F32, #8B4513); box-shadow: 0 0 10px rgba(205,127,50,0.5); }
+.rank-other { background: rgba(255, 255, 255, 0.2); }
+
+.lb-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.lb-name {
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.lb-energy-badge {
+    background: rgba(52, 142, 56, 0.3);
+    border: 1px solid var(--primary);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.vip-badge {
+    background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+    border: 1px solid #fff !important;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+    animation: pulse-vip 2s infinite alternate;
+}
+
+@keyframes pulse-vip {
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* FIX 5: sponsors ticker uses width:100% instead of 100vw.
+   width:100vw inside a padded flex container causes horizontal
+   overflow because vw ignores the parent's padding. */
+.sponsors-ticker-container {
+    width: 100%;
+    background: rgba(15, 66, 41, 0.9);
+    border-top: 2px solid rgba(52, 142, 56, 0.3);
+    padding: 15px 0;
+    overflow: hidden;
+    position: relative;
+    margin-top: 30px;
+}
+
+.ticker-wrapper {
+    display: flex;
+    width: max-content;
+    animation: tickerSlide 30s linear infinite;
+}
+
+.ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 40px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+
+.sponsor-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(100%) brightness(200%);
+    transition: filter 0.3s;
+}
+
+.sponsor-logo:hover { filter: none; }
+
+@keyframes tickerSlide {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ── Site footer ── */
+.site-footer {
+    width: 100%;
+    background: rgba(15, 66, 41, 0.95);
+    border-top: 2px solid rgba(52, 142, 56, 0.4);
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-align: center;
+    padding: 18px 20px;
+    letter-spacing: 0.02em;
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — leaderboard only; hero scales via .hero-content
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Desktop: move toggle to top-center ── */
+@media (min-width: 769px) {
+    .lang-toggle-btn {
+        top: 20px;
+        bottom: auto;
+        padding: 7px 16px;
+        font-size: 0.8rem;
+        gap: 6px;
+    }
+}
+
+/* ── 768px  (tablets / large phones in landscape) ── */
+@media (max-width: 768px) {
+    .leaderboard-section { padding: 30px 12px 0; }
+    .lb-container { padding: 20px 16px; }
+    .lb-section-title { font-size: 1.4rem; }
+    .lb-col-subtitle { font-size: 1.05rem; }
+    .lb-row { padding: 10px 14px; }
+    .lb-avatar { width: 38px; height: 38px; }
+    .lb-name { font-size: 0.88rem; }
+    .lb-energy-badge { padding: 4px 10px; font-size: 0.78rem; }
+    .ticker-item { font-size: 0.95rem; padding: 0 28px; }
+    .sponsor-logo { height: 32px; }
+}
+
+/* ── 480px  (standard phones) ── */
+@media (max-width: 480px) {
+    .left-action-group {
+        top: 6px;
+        left: 4px;
+        gap: 6px;
+    }
+    .share-success-btn {
+        width:  44px;
+        height: 44px;
+        font-size: 0.52rem;
+        padding: 5px;
+    }
+    .leaderboard-section { padding: 24px 10px 0; }
+    .lb-container { padding: 16px 12px; border-radius: 16px; }
+    .lb-section-title { font-size: 1.15rem; }
+    .lb-col-subtitle { font-size: 0.95rem; margin-bottom: 14px; }
+    .lb-row { padding: 9px 10px; border-radius: 12px; margin-bottom: 9px; }
+    .lb-rank-info { gap: 8px; }
+    .lb-rank { width: 26px; height: 26px; font-size: 0.85rem; }
+    .lb-avatar { width: 34px; height: 34px; }
+    .lb-name { font-size: 0.8rem; }
+    .lb-energy-badge { padding: 3px 8px; font-size: 0.72rem; }
+    .social-bar { font-size: 0.78rem; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .ticker-item { font-size: 0.82rem; padding: 0 18px; gap: 8px; }
+    .sponsor-logo { height: 26px; }
+}
+
+/* ── 360px  (iPhone SE, small Androids) ── */
+@media (max-width: 360px) {
+    .lb-container { padding: 14px 8px; }
+    .lb-section-title { font-size: 1rem; }
+    .lb-row { padding: 8px; }
+    .lb-avatar { width: 30px; height: 30px; }
+    .lb-name { font-size: 0.75rem; }
+    .lb-energy-badge { padding: 3px 6px; font-size: 0.68rem; }
+}
+
+/* ── Login nav button (shown on all pages except homepage) ── */
+.login-nav-btn {
+    position: fixed;
+    top: 14px;
+    inset-inline-end: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(52,142,56,0.18);
+    border: 1px solid rgba(126,232,138,0.35);
+    color: #7ee88a !important;
+    padding: 7px 16px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    z-index: 1050;
+    white-space: nowrap;
+}
+.login-nav-btn:hover {
+    background: rgba(52,142,56,0.35);
+    border-color: rgba(126,232,138,0.65);
+    transform: translateY(-1px);
+}
+.login-nav-btn i { font-size: 0.9em; }
+@media (max-width: 480px) {
+    .login-nav-btn span.nav-login-text { display: none; }
+    .login-nav-btn { padding: 8px 11px; gap: 0; }
+}

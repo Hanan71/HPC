@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intellaqa - HPC</title>
+    <link rel="icon" href="img/logo1.png">
+
+    <!-- Bootstrap RTL (swapped to LTR by i18n.js when English is active) -->
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- i18n engine — loaded in <head> so lang/dir is set before first paint -->
+    <script src="js/i18n.js"></script>
+</head>
+
+<body data-i18n-page-title="title_index">
+
+    <!-- Language toggle — fixed so it stays visible while scrolling -->
+    <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLang()" aria-label="Toggle language">
+        <i class="fa-solid fa-globe"></i>
+        <span class="lang-label">EN</span>
+    </button>
+
+    <!-- Leaderboard error notice (shown only when fetch fails) -->
+    <div id="leaderboard-error-banner" style="display:none;" role="alert" aria-live="polite">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+        <span data-i18n="leaderboard_error">تعذّر تحميل بيانات المتصدرين، يُعرض محتوى تجريبي مؤقتاً</span>
+        <button class="leaderboard-error-close"
+                onclick="document.getElementById('leaderboard-error-banner').style.display='none'"
+                aria-label="إغلاق">×</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         Hero section — full-viewport containing block.
+         All absolute/fixed children (bg, bubbles, buttons, title)
+         are scoped here so they don't leak over the leaderboard.
+         ═══════════════════════════════════════════════════════ -->
+    <section id="hero-section">
+
+        <!-- Background carousel -->
+        <div id="bg-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="d-block w-100 bg-carousel-img" src="img/Backgrund2.jpg" alt="خلفية اِنطلاقة">
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating bubbles — contained within hero only -->
+        <div id="bubbles-container"></div>
+
+        <!-- Hero content — scaled proportionally on small screens -->
+        <div class="hero-content">
+
+            <!-- Left action group: circular join button + community pill -->
+            <div class="left-action-group">
+                <a href="home.html" class="share-success-btn"
+                   data-i18n-html="share_success">
+                    شاركنا<br>النجاح
+                </a>
+                <a href="https://t.me/HPC_earning" class="join-community-btn" target="_blank">
+                    <i class="fab fa-telegram-plane"></i>
+                    <span data-i18n="join_community">انضم لمجتمعنا</span>
+                </a>
+            </div>
+
+            <!-- Main title / logo -->
+            <h1 class="main-title" onclick="navigateToPage('leaderboard.html', this)">
+                <img src="img/logo1.png" alt="Logo" class="me-2"
+                     style="height:clamp(36px,8vw,100px); width:auto;
+                            object-fit:contain; filter:drop-shadow(0px 0px 8px rgba(0,0,0,0.6));">
+                <span data-i18n="brand_name">اِنطلاقة</span>
+                <small class="text-muted" style="font-size:0.5em;">
+                    - HPC <i class="fa-solid fa-bolt ms-1" style="color:#a0a0a0;"></i>
+                </small>
+            </h1>
+
+            <!-- Pyramid of interactive circles -->
+            <div class="pyramid-container" id="mainContainer">
+                <div class="top-row">
+                    <a href="workout-session.html" class="interactive-circle green-glow text-decoration-none"
+                       onclick="event.preventDefault(); navigateToPage('workout-session.html', this)">
+                        <div class="circle-bg-carousel">
+                            <img src="img/carousel-1.jpg" class="active" alt="">
+                            <img src="img/carousel-4.jpg" alt="">
+                            <img src="img/carousel-3.jpg" alt="">
+                        </div>
+                        <span class="circle-text" data-i18n="circle_device">أنت عند الجهاز؟</span>
+                    </a>
+                </div>
+
+                <div class="bottom-row">
+                    <a href="energy-map.html" class="interactive-circle text-decoration-none"
+                       onclick="event.preventDefault(); navigateToPage('energy-map.html', this)">
+                        <div class="circle-bg-carousel">
+                            <img src="img/carousel-4.jpg" class="active" alt="">
+                            <img src="img/carousel-3.jpg" alt="">
+                            <img src="img/carousel-1.jpg" alt="">
+                        </div>
+                        <span class="circle-text" data-i18n="circle_nearest">وين اقرب جهاز؟</span>
+                    </a>
+
+                    <a href="about-intellaqa.html" class="interactive-circle text-decoration-none"
+                       onclick="event.preventDefault(); navigateToPage('about-intellaqa.html', this)">
+                        <div class="circle-bg-carousel">
+                            <img src="img/carousel-3.jpg" class="active" alt="">
+                            <img src="img/carousel-1.jpg" alt="">
+                            <img src="img/carousel-4.jpg" alt="">
+                        </div>
+                        <span class="circle-text" data-i18n-html="circle_what">ايش هو؟<br>اِنطلاقة-HPC? ⚡</span>
+                    </a>
+                </div>
+            </div>
+
+        </div><!-- /.hero-content -->
+
+    </section><!-- /#hero-section -->
+
+    <!-- ═══════════════════════════════════════════════════════
+         Leaderboard section — normal document flow below hero
+         ═══════════════════════════════════════════════════════ -->
+    <div class="leaderboard-section">
+
+        <!-- Social links bar -->
+        <div class="social-bar">
+            <!-- Follow us + icons -->
+            <div class="social-follow-group">
+                <span data-i18n="follow_us">تابعنا على:</span>
+                <div class="social-icons">
+                    <a class="social-icon-link" href="https://www.linkedin.com/company/hpc11/" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a class="social-icon-link" href="https://www.tiktok.com/@hpc384" target="_blank" rel="noopener noreferrer"
+                       style="width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/>
+                        </svg>
+                    </a>
+                    <a class="social-icon-link" href="https://t.me/HPC_earning" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- Login button -->
+            <a href="auth-login.html" class="social-login-btn">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span class="social-login-text" data-i18n="login_nav_btn">ابدأ بتوليد الطاقة</span>
+            </a>
+        </div>
+
+        <!-- Heroes + Supporters table -->
+        <div class="lb-container">
+            <h2 class="lb-section-title" data-i18n="leaderboard_title">🏆 لوحة الصدارة والدعم 🏆</h2>
+            <hr style="border-color: rgba(255,255,255,0.15); margin-bottom: 30px;">
+
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h3 class="lb-col-subtitle">
+                        <i class="fa-solid fa-bolt text-warning me-2"></i>
+                        <span data-i18n="energy_heroes">أبطال الطاقة</span>
+                    </h3>
+                    <div id="leaderboard-list"><!-- populated dynamically --></div>
+                </div>
+
+                <div class="col-md-6">
+                    <h3 class="lb-col-subtitle">
+                        <i class="fa-solid fa-crown text-warning me-2"></i>
+                        <span data-i18n="top_supporters">سفراء اِنطلاقة</span>
+                    </h3>
+                    <div id="supporters-list"><!-- populated dynamically --></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sponsors infinite ticker -->
+        <div class="sponsors-ticker-container">
+            <div class="ticker-wrapper" dir="ltr">
+                <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+                <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+                <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+                <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+                <div class="ticker-item"><img src="img/logo6.png" class="sponsor-logo" alt="راعي"><span></span></div>
+                <div class="ticker-item"><img src="img/logo7.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_starbucks">StarBucks</span></div>
+                <div class="ticker-item"><img src="img/logo8.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kfmc">مدينة الملك فهد الطبية</span></div>
+                <div class="ticker-item"><img src="img/logo9.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kaust">KAUST</span></div>
+                <!-- Duplicate set for seamless loop -->
+                <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+                <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+                <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+                <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+            </div>
+        </div>
+
+    </div><!-- /.leaderboard-section -->
+
+    <footer class="site-footer">
+        <span data-i18n="footer_rights">‏⚡ جميع الحقوق محفوظة لفريق اِنطلاقة-HPC</span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <script>
+        // ── Leaderboard population ──────────────────────────────────────────
+        var MEDALS       = ['🥇', '🥈', '🥉'];
+        var RANK_CLASSES = ['rank-1', 'rank-2', 'rank-3'];
+        var lbData       = null;
+
+        function isEn() { return document.documentElement.lang === 'en'; }
+        function getName(entry) { return isEn() ? (entry.name_en || entry.name) : entry.name; }
+
+        function buildHeroRow(hero, idx) {
+            var rankClass = idx < 3 ? RANK_CLASSES[idx] : 'rank-other';
+            var medal     = idx < 3 ? ' ' + MEDALS[idx] : '';
+            var rankLabel = '<span class="lb-rank ' + rankClass + '">' + (idx + 1) + '</span>';
+            var name      = getName(hero);
+            return '<div class="lb-row">'
+                + '<div class="lb-rank-info">'
+                +     rankLabel
+                +     '<img src="' + hero.img + '" class="lb-avatar" alt="' + name + '">'
+                +     '<span class="lb-name" dir="auto">' + name + medal + '</span>'
+                + '</div>'
+                + '<span class="lb-energy-badge">' + hero.energy + '</span>'
+                + '</div>';
+        }
+
+        function buildSupporterRow(supporter, idx) {
+            var rankIcon = idx < 3
+                ? '<span class="lb-rank ' + RANK_CLASSES[idx] + '"><i class="fa-solid fa-gem"></i></span>'
+                : '<span class="lb-rank rank-other"><i class="fa-solid fa-heart text-danger"></i></span>';
+            var name = getName(supporter);
+            var vip  = window.t ? window.t('vip_badge') : '<i class="fa-solid fa-star ms-1"></i> VIP مشترك';
+            return '<div class="lb-row">'
+                + '<div class="lb-rank-info">'
+                +     rankIcon
+                +     '<img src="' + supporter.img + '" class="lb-avatar" alt="' + name + '">'
+                +     '<span class="lb-name" dir="auto">' + name + '</span>'
+                + '</div>'
+                + '<span class="lb-energy-badge vip-badge">' + vip + '</span>'
+                + '</div>';
+        }
+
+        function renderLeaderboard() {
+            if (!lbData) return;
+            var heroes     = lbData.heroes     || [];
+            var supporters = lbData.supporters || [];
+            var heroList   = document.getElementById('leaderboard-list');
+            var supList    = document.getElementById('supporters-list');
+            if (heroList) heroList.innerHTML = heroes.map(buildHeroRow).join('');
+            if (supList)  supList.innerHTML  = supporters.map(buildSupporterRow).join('');
+        }
+
+        // Re-render names when language is toggled
+        (function() {
+            var _orig = window.applyLang;
+            window.applyLang = function(lang) {
+                _orig(lang);
+                renderLeaderboard();
+            };
+        })();
+
+        fetch('data/leaderboard.json')
+            .then(function(r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function(data) {
+                lbData = data;
+                renderLeaderboard();
+            })
+            .catch(function(err) {
+                console.error('فشل تحميل لوحة الصدارة:', err);
+            });
+    </script>
+</body>
+</html>

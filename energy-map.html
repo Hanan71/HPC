@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وين أقرب جهاز؟ - اِنطلاقة</title>
+    <link rel="icon" href="img/logo1.png">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+
+    <style>
+        /* ═══ Page shell ═══ */
+        * { box-sizing: border-box; }
+        .find-body {
+            min-height: 100vh;
+            background: var(--dark);
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0;
+        }
+
+        /* ═══ Back + lang (reuse leaderboard pattern) ═══ */
+        .back-home-btn {
+            position: fixed;
+            top: 14px;
+            inset-inline-start: 16px;
+            right: auto; left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff !important;
+            padding: 7px 16px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            z-index: 1050;
+            white-space: nowrap;
+        }
+        .back-home-btn:hover { background:#fff; color:var(--dark) !important; }
+        [dir="ltr"] .back-arrow { transform: scaleX(-1); }
+
+        /* ═══ Hero header ═══ */
+        .find-hero {
+            background: linear-gradient(160deg, rgba(15,66,41,0.98) 0%, rgba(10,44,28,0.98) 100%);
+            border-bottom: 1px solid rgba(52,142,56,0.3);
+            padding: 64px 20px 24px;
+            text-align: center;
+        }
+        .find-hero h1 {
+            color: #fff;
+            font-weight: 900;
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            margin-bottom: 6px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        .find-hero h1 span { color: #7ee88a; }
+        .find-hero p.subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.88rem;
+            margin-bottom: 18px;
+        }
+
+        /* Search row */
+        .search-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .search-input-wrap {
+            position: relative;
+            flex: 1 1 220px;
+        }
+        .search-input-wrap i {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            inset-inline-start: 14px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+        #search-input {
+            width: 100%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 30px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            padding: 10px 42px;
+            outline: none;
+            transition: border-color 0.25s, background 0.25s;
+        }
+        #search-input::placeholder { color: rgba(255,255,255,0.35); }
+        #search-input:focus { border-color: rgba(126,232,138,0.6); background: rgba(255,255,255,0.12); }
+
+        #filter-select {
+            flex: 0 0 auto;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 30px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.88rem;
+            padding: 10px 18px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.25s;
+        }
+        #filter-select option { background: #0f4229; color: #fff; }
+        #filter-select:focus { border-color: rgba(126,232,138,0.6); }
+
+        #locate-btn {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: linear-gradient(135deg, #348E38, #2d7a31);
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(52,142,56,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+        #locate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(52,142,56,0.55); }
+        #locate-btn.locating i { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ═══ Bike hero spotlight ═══ */
+        .hero-bike-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .hero-bike-img {
+            width: clamp(110px, 18vw, 175px);
+            height: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 8px 22px rgba(0,0,0,0.55));
+            animation: bikeHoverSearch 3.5s ease-in-out infinite;
+        }
+        @keyframes bikeHoverSearch {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-8px); }
+        }
+        /* Conic spotlight beam from above */
+        .hero-bike-wrap::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 220px;
+            height: 340px;
+            background: conic-gradient(
+                from 260deg at 50% 0%,
+                transparent 0deg,
+                rgba(126,232,138,0.13) 20deg,
+                rgba(255,255,255,0.22) 40deg,
+                rgba(126,232,138,0.13) 60deg,
+                transparent 80deg
+            );
+            z-index: 1;
+            pointer-events: none;
+            animation: spotlightPulse 3.5s ease-in-out infinite;
+        }
+        /* Glow puddle on the floor */
+        .hero-bike-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px; height: 18px;
+            background: radial-gradient(ellipse, rgba(126,232,138,0.45) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: spotlightPulse 3.5s ease-in-out infinite;
+        }
+        @keyframes spotlightPulse {
+            0%, 100% { opacity: 0.8; }
+            50%       { opacity: 1.0; }
+        }
+        /* "Looking for this" tag */
+        .bike-search-tag {
+            position: absolute;
+            top: -6px;
+            inset-inline-end: -14px;
+            background: linear-gradient(135deg,#348E38,#2d7a31);
+            color: #fff;
+            font-size: 0.62rem;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(52,142,56,0.5);
+            z-index: 3;
+            animation: tagBounce 2s ease-in-out infinite;
+        }
+        @keyframes tagBounce {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50%       { transform: translateY(-4px) rotate(-3deg); }
+        }
+
+        /* Stats row */
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.75);
+        }
+        .stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dot-available  { background: #4caf50; box-shadow: 0 0 6px rgba(76,175,80,0.7); }
+        .dot-inuse      { background: #f44336; box-shadow: 0 0 6px rgba(244,67,54,0.7); }
+        .dot-maintenance{ background: #ff9800; box-shadow: 0 0 6px rgba(255,152,0,0.7); }
+
+        /* ═══ Main layout ═══ */
+        .find-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Map column */
+        .map-col {
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 185px);
+            flex: 0 0 58%;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        /* Leaflet override for dark theme */
+        .leaflet-popup-content-wrapper {
+            background: #0f4229;
+            border: 1px solid rgba(52,142,56,0.5);
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .leaflet-popup-tip { background: #0f4229; }
+        .leaflet-popup-content { margin: 12px 16px; font-size: 0.88rem; }
+        .leaflet-popup-close-button { color: rgba(255,255,255,0.6) !important; font-size: 1.1rem !important; }
+        .leaflet-control-zoom a { background: #0f4229 !important; color: #7ee88a !important; border-color: rgba(52,142,56,0.4) !important; }
+        .leaflet-control-zoom a:hover { background: #1b5e38 !important; }
+        .leaflet-control-attribution { background: rgba(255,255,255,0.75) !important; color: #555 !important; font-size: 0.65rem !important; }
+        .leaflet-control-attribution a { color: #348E38 !important; }
+
+        /* Custom marker */
+        .hpc-marker {
+            background: linear-gradient(135deg,#348E38,#2d7a31);
+            border: 2px solid #7ee88a;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 14px rgba(52,142,56,0.6);
+            transition: transform 0.2s;
+        }
+        .hpc-marker i {
+            transform: rotate(45deg);
+            color: #fff;
+            font-size: 0.88rem;
+        }
+        .hpc-marker.status-inuse    { background: linear-gradient(135deg,#c62828,#b71c1c); border-color: #ef9a9a; }
+        .hpc-marker.status-maintenance { background: linear-gradient(135deg,#e65100,#bf360c); border-color: #ffcc80; }
+        .hpc-marker.nearest-glow { box-shadow: 0 0 0 6px rgba(126,232,138,0.35), 0 4px 14px rgba(52,142,56,0.7); }
+
+        /* Cards column */
+        .cards-col {
+            flex: 0 0 42%;
+            overflow-y: auto;
+            padding: 16px 14px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(52,142,56,0.4) transparent;
+        }
+        .cards-col::-webkit-scrollbar { width: 4px; }
+        .cards-col::-webkit-scrollbar-thumb { background: rgba(52,142,56,0.4); border-radius: 4px; }
+
+        /* Result count */
+        .results-count {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .results-count strong { color: #7ee88a; }
+
+        /* Location card */
+        .loc-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(52,142,56,0.22);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            transition: background 0.25s, border-color 0.25s, transform 0.2s;
+            cursor: pointer;
+        }
+        .loc-card:hover {
+            background: rgba(52,142,56,0.1);
+            border-color: rgba(52,142,56,0.5);
+            transform: translateY(-2px);
+        }
+        .loc-card.card-highlighted {
+            border-color: #7ee88a;
+            background: rgba(126,232,138,0.07);
+            box-shadow: 0 0 0 2px rgba(126,232,138,0.2);
+        }
+        .loc-card.card-nearest {
+            border-color: #7ee88a;
+            background: rgba(126,232,138,0.09);
+        }
+        .nearest-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg,#348E38,#2d7a31);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .card-name { font-weight: 900; color: #fff; font-size: 0.95rem; line-height: 1.4; }
+        .card-neighborhood { color: rgba(255,255,255,0.5); font-size: 0.78rem; }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .status-available   { background: rgba(76,175,80,0.15);  color: #81c784; border: 1px solid rgba(76,175,80,0.35); }
+        .status-inuse       { background: rgba(244,67,54,0.15);  color: #e57373; border: 1px solid rgba(244,67,54,0.35); }
+        .status-maintenance { background: rgba(255,152,0,0.15);  color: #ffb74d; border: 1px solid rgba(255,152,0,0.35); }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .status-available   .status-dot { background: #4caf50; animation: dotPulse 1.6s ease-in-out infinite; }
+        .status-inuse       .status-dot { background: #f44336; }
+        .status-maintenance .status-dot { background: #ff9800; }
+        @keyframes dotPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.6); }
+            50%     { box-shadow: 0 0 0 4px rgba(76,175,80,0); }
+        }
+
+        /* Card meta row */
+        .card-meta {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .card-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.78rem;
+        }
+        .card-meta-item i { color: #7ee88a; font-size: 0.78rem; }
+        .card-meta-item strong { color: #fff; }
+
+        /* Directions button */
+        .directions-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(52,142,56,0.15);
+            border: 1px solid rgba(52,142,56,0.4);
+            border-radius: 30px;
+            color: #7ee88a !important;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 7px 16px;
+            transition: background 0.25s, border-color 0.25s;
+            font-family: 'Cairo', sans-serif;
+        }
+        .directions-btn:hover {
+            background: rgba(52,142,56,0.3);
+            border-color: rgba(52,142,56,0.7);
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            padding: 48px 20px;
+        }
+        .no-results i { font-size: 2.5rem; margin-bottom: 14px; display: block; color: rgba(52,142,56,0.4); }
+
+        /* ═══ Suggest section ═══ */
+        .suggest-section {
+            background: rgba(15,66,41,0.5);
+            border-top: 1px solid rgba(52,142,56,0.25);
+            padding: 36px 20px;
+            text-align: center;
+        }
+        .suggest-inner {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+        .suggest-inner h2 {
+            color: #7ee88a;
+            font-weight: 900;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        .suggest-inner p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.88rem;
+            margin-bottom: 18px;
+        }
+        .suggest-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg,#348E38,#2d7a31);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 12px 28px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(52,142,56,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .suggest-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(52,142,56,0.55); }
+
+        /* ═══ Sponsors ticker ═══ */
+        .sponsors-ticker-container {
+            width: 100%;
+            background: rgba(15,66,41,0.9);
+            border-top: 2px solid rgba(52,142,56,0.3);
+            padding: 15px 0;
+            overflow: hidden;
+        }
+        .ticker-wrapper {
+            display: flex;
+            width: max-content;
+            animation: lbTickerSlide 25s linear infinite;
+        }
+        .ticker-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 40px; color: #fff;
+            font-weight: 700; font-size: 1.1rem; white-space: nowrap;
+        }
+        .sponsor-logo {
+            height: 40px; width: auto; object-fit: contain;
+            filter: grayscale(100%) brightness(200%);
+            transition: filter 0.3s;
+        }
+        .sponsor-logo:hover { filter: none; }
+        @keyframes lbTickerSlide {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ═══ Modal ═══ */
+        .modal-content {
+            background: #0f4229;
+            border: 1px solid rgba(52,142,56,0.4);
+            border-radius: 20px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+        .modal-header {
+            border-bottom: 1px solid rgba(52,142,56,0.3);
+            padding: 20px 24px 16px;
+        }
+        .modal-title { font-weight: 900; color: #7ee88a; }
+        .btn-close { filter: invert(1) opacity(0.6); }
+        .modal-body { padding: 20px 24px; }
+        .modal-footer { border-top: 1px solid rgba(52,142,56,0.3); padding: 16px 24px; }
+
+        .form-label { color: rgba(255,255,255,0.8); font-size: 0.88rem; font-weight: 700; margin-bottom: 6px; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.3); }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(126,232,138,0.5);
+            color: #fff;
+            box-shadow: 0 0 0 3px rgba(126,232,138,0.1);
+        }
+        .form-select option { background: #0f4229; }
+        .btn-success-custom {
+            background: linear-gradient(135deg,#348E38,#2d7a31);
+            border: none; color: #fff;
+            font-family: 'Cairo', sans-serif; font-weight: 700;
+            border-radius: 30px; padding: 10px 28px;
+            transition: transform 0.2s;
+        }
+        .btn-success-custom:hover { transform: translateY(-2px); }
+        .btn-cancel-custom {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.7);
+            font-family: 'Cairo', sans-serif; font-weight: 700;
+            border-radius: 30px; padding: 10px 20px;
+        }
+
+        /* Success state in modal */
+        .suggest-success {
+            text-align: center;
+            padding: 20px 10px;
+            display: none;
+        }
+        .suggest-success i { font-size: 3rem; color: #7ee88a; margin-bottom: 14px; }
+        .suggest-success h4 { color: #fff; font-weight: 900; }
+        .suggest-success p  { color: rgba(255,255,255,0.6); font-size: 0.88rem; }
+
+        /* ═══ Responsive ═══ */
+        @media (max-width: 991px) {
+            .find-main { flex-direction: column; overflow: visible; }
+            .map-col { position: relative; flex: none; height: 320px; }
+            .cards-col { flex: none; overflow-y: visible; max-height: none; padding: 16px; }
+        }
+        @media (max-width: 480px) {
+            .find-hero { padding: 62px 16px 20px; }
+            .search-row { gap: 8px; }
+            .ticker-item { font-size: 0.78rem; padding: 0 14px; gap: 6px; }
+            .sponsor-logo { height: 24px; }
+        }
+    </style>
+</head>
+<body class="find-body">
+
+    <!-- Lang toggle -->
+    <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLang()" aria-label="Toggle language">
+        <span data-i18n="toggle_label">EN</span>
+        <i class="fa-solid fa-globe"></i>
+    </button>
+
+    <!-- Back button -->
+    <a href="index.html" class="back-home-btn" onclick="event.preventDefault(); history.back();">
+        <i class="fa-solid fa-chevron-right back-arrow"></i>
+        <span data-i18n="back_home">الرئيسية</span>
+    </a>
+
+    <a href="auth-login.html" class="login-nav-btn">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        <span class="nav-login-text" data-i18n="login_nav_btn">ابدأ بتوليد الطاقة</span>
+    </a>
+
+    <!-- ══════════ HERO ══════════ -->
+    <div class="find-hero">
+        <!-- Bike spotlight -->
+        <div class="hero-bike-wrap">
+            <img src="img/bike-front.png" class="hero-bike-img" alt="دراجة اِنطلاقة HPC">
+            <span class="bike-search-tag" data-i18n="find_bike_tag">نبحث عنه ⚡</span>
+        </div>
+
+        <h1><i class="fa-solid fa-location-dot" style="color:#7ee88a;margin-left:8px;"></i> <span data-i18n="find_heading">وين أقرب جهاز؟</span></h1>
+        <p class="subtitle" data-i18n="find_subtitle">اكتشف أقرب دراجة اِنطلاقة-HPC في حيّك وابدأ توليد الطاقة</p>
+
+        <div class="search-row">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-input" data-i18n-placeholder="find_search_placeholder" placeholder="ابحث عن حي أو موقع...">
+            </div>
+            <select id="filter-select">
+                <option value="" data-i18n="find_filter_all">الكل</option>
+                <option value="available" data-i18n="find_filter_available">🟢 متاح</option>
+                <option value="inuse" data-i18n="find_filter_inuse">🔴 مشغول</option>
+                <option value="maintenance" data-i18n="find_filter_maintenance">🟡 صيانة</option>
+            </select>
+            <button id="locate-btn">
+                <i class="fa-solid fa-location-crosshairs"></i>
+                <span data-i18n="find_locate_btn">حدّد موقعي</span>
+            </button>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-pill"><div class="stat-dot dot-available"></div><span data-i18n="find_stat_available">متاح</span></div>
+            <div class="stat-pill"><div class="stat-dot dot-inuse"></div><span data-i18n="find_stat_inuse">مشغول</span></div>
+            <div class="stat-pill"><div class="stat-dot dot-maintenance"></div><span data-i18n="find_stat_maintenance">صيانة</span></div>
+        </div>
+    </div>
+
+    <!-- ══════════ MAIN: MAP + CARDS ══════════ -->
+    <div class="find-main">
+
+        <!-- Map -->
+        <div class="map-col">
+            <div id="map" dir="ltr"></div>
+        </div>
+
+        <!-- Cards list -->
+        <div class="cards-col">
+            <p class="results-count" id="results-count"></p>
+            <div id="locations-list"></div>
+        </div>
+
+    </div>
+
+    <!-- ══════════ SUGGEST SECTION ══════════ -->
+    <div class="suggest-section">
+        <div class="suggest-inner">
+            <h2 data-i18n="find_suggest_title">اقترح موقعاً جديداً 📍</h2>
+            <p data-i18n="find_suggest_desc">تريد دراجة اِنطلاقة في حيّك؟ أرسل لنا طلبك وسنأخذه بعين الاعتبار.</p>
+            <button class="suggest-btn" data-bs-toggle="modal" data-bs-target="#suggestModal">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span data-i18n="find_suggest_btn">أرسل اقتراحك</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════ SPONSORS TICKER ══════════ -->
+    <div class="sponsors-ticker-container">
+        <div class="ticker-wrapper" dir="ltr">
+            <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+            <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+            <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+            <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+            <div class="ticker-item"><img src="img/logo6.png" class="sponsor-logo" alt="راعي"><span></span></div>
+            <div class="ticker-item"><img src="img/logo7.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_starbucks">StarBucks</span></div>
+            <div class="ticker-item"><img src="img/logo8.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kfmc">مدينة الملك فهد الطبية</span></div>
+            <div class="ticker-item"><img src="img/logo9.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kaust">KAUST</span></div>
+            <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+            <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+            <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+            <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <span data-i18n="footer_rights">‏⚡ جميع الحقوق محفوظة لفريق اِنطلاقة-HPC</span>
+    </footer>
+
+    <!-- ══════════ SUGGEST MODAL ══════════ -->
+    <div class="modal fade" id="suggestModal" tabindex="-1" aria-labelledby="suggestModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="suggestModalLabel" data-i18n="find_modal_title">اقترح موقعاً جديداً</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form -->
+                    <div id="suggest-form-wrap">
+                        <div class="mb-3">
+                            <label class="form-label" data-i18n="find_form_name">اسمك (اختياري)</label>
+                            <input type="text" class="form-control" id="f-name" data-i18n-placeholder="find_form_name_ph" placeholder="اسمك الكريم">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" data-i18n="find_form_neighborhood">الحي المقترح *</label>
+                            <input type="text" class="form-control" id="f-hood" data-i18n-placeholder="find_form_neighborhood_ph" placeholder="مثال: حي النرجس، العليا...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" data-i18n="find_form_location">الموقع التفصيلي *</label>
+                            <input type="text" class="form-control" id="f-loc" data-i18n-placeholder="find_form_location_ph" placeholder="مثال: بجانب الحديقة الرئيسية">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" data-i18n="find_form_reason">سبب الاقتراح</label>
+                            <textarea class="form-control" id="f-reason" rows="3" data-i18n-placeholder="find_form_reason_ph" placeholder="لماذا تعتقد أن هذا الموقع مناسب؟"></textarea>
+                        </div>
+                        <div class="mb-1">
+                            <label class="form-label" data-i18n="find_form_contact">تواصل (اختياري)</label>
+                            <input type="text" class="form-control" id="f-contact" data-i18n-placeholder="find_form_contact_ph" placeholder="واتساب أو إيميل للرد عليك">
+                        </div>
+                    </div>
+                    <!-- Success state -->
+                    <div class="suggest-success" id="suggest-success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <h4 data-i18n="find_form_success_title">شكراً لاقتراحك! 🎉</h4>
+                        <p data-i18n="find_form_success_body">وصل اقتراحك، سنراجعه وندرس إمكانية إضافة جهاز في الموقع المقترح.</p>
+                    </div>
+                </div>
+                <div class="modal-footer" id="suggest-footer">
+                    <button type="button" class="btn btn-cancel-custom" data-bs-dismiss="modal" data-i18n="find_form_cancel">إلغاء</button>
+                    <button type="button" class="btn btn-success-custom" id="submit-suggest-btn">
+                        <i class="fa-solid fa-paper-plane me-1"></i>
+                        <span data-i18n="find_form_submit">إرسال الاقتراح</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    /* ═══════════════════════════════════════════════════
+       Locations data
+    ═══════════════════════════════════════════════════ */
+    var LOCATIONS = [
+        {
+            id: 1,
+            name_ar: 'رياض فرونت',          name_en: 'Riyadh Front',
+            hood_ar: 'حي الدرعية',          hood_en: 'Al Diriyah',
+            lat: 24.7566, lng: 46.5924,
+            status: 'available',
+            bikes: 3, total: 4,
+            hours_ar: '٦ص – ١٢م', hours_en: '6AM – 12AM',
+            gmaps: 'https://maps.google.com/?q=24.7566,46.5924'
+        },
+        {
+            id: 2,
+            name_ar: 'الحزام الرياضي',      name_en: 'Sports Boulevard',
+            hood_ar: 'حي العليا',           hood_en: 'Al Olaya',
+            lat: 24.7246, lng: 46.6462,
+            status: 'available',
+            bikes: 2, total: 3,
+            hours_ar: '٥ص – ١١م', hours_en: '5AM – 11PM',
+            gmaps: 'https://maps.google.com/?q=24.7246,46.6462'
+        },
+        {
+            id: 3,
+            name_ar: 'حديقة المالقا',       name_en: 'Al Malqa Park',
+            hood_ar: 'حي المالقا',          hood_en: 'Al Malqa',
+            lat: 24.8067, lng: 46.6244,
+            status: 'inuse',
+            bikes: 0, total: 2,
+            hours_ar: '٦ص – ١٠م', hours_en: '6AM – 10PM',
+            gmaps: 'https://maps.google.com/?q=24.8067,46.6244'
+        },
+        {
+            id: 4,
+            name_ar: 'مجمع الياسمين',       name_en: 'Al Yasmin Mall',
+            hood_ar: 'حي الياسمين',         hood_en: 'Al Yasmin',
+            lat: 24.7950, lng: 46.6401,
+            status: 'available',
+            bikes: 1, total: 2,
+            hours_ar: '٩ص – ١٢م', hours_en: '9AM – 12AM',
+            gmaps: 'https://maps.google.com/?q=24.7950,46.6401'
+        },
+        {
+            id: 5,
+            name_ar: 'برج المملكة',         name_en: 'Kingdom Tower Area',
+            hood_ar: 'حي العليا الشمالي',   hood_en: 'North Olaya',
+            lat: 24.7136, lng: 46.6753,
+            status: 'maintenance',
+            bikes: 0, total: 3,
+            hours_ar: '٨ص – ١٢م', hours_en: '8AM – 12AM',
+            gmaps: 'https://maps.google.com/?q=24.7136,46.6753'
+        },
+        {
+            id: 6,
+            name_ar: 'مركز حي النخيل',      name_en: 'Al Nakheel Center',
+            hood_ar: 'حي النخيل',           hood_en: 'Al Nakheel',
+            lat: 24.8040, lng: 46.7037,
+            status: 'available',
+            bikes: 2, total: 3,
+            hours_ar: '٦ص – ١٠م', hours_en: '6AM – 10PM',
+            gmaps: 'https://maps.google.com/?q=24.8040,46.7037'
+        }
+    ];
+
+    /* ═══════════════════════════════════════════════════
+       Helpers
+    ═══════════════════════════════════════════════════ */
+    function isEn() { return document.documentElement.lang === 'en'; }
+    function t(key) { return window.t ? window.t(key) : key; }
+
+    function statusLabel(s) {
+        if (s === 'available')   return isEn() ? 'Available'       : 'متاح';
+        if (s === 'inuse')       return isEn() ? 'In Use'          : 'مشغول';
+        if (s === 'maintenance') return isEn() ? 'Under Maintenance': 'صيانة';
+        return s;
+    }
+    function statusIcon(s) {
+        if (s === 'available')   return '🟢';
+        if (s === 'inuse')       return '🔴';
+        if (s === 'maintenance') return '🟡';
+        return '';
+    }
+
+    // Haversine distance (km)
+    function haversine(lat1, lng1, lat2, lng2) {
+        var R = 6371, dLat = (lat2 - lat1) * Math.PI / 180,
+            dLng = (lng2 - lng1) * Math.PI / 180;
+        var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+                Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+                Math.sin(dLng/2)*Math.sin(dLng/2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Map setup
+    ═══════════════════════════════════════════════════ */
+    var map = L.map('map', { zoomControl: true, attributionControl: true })
+               .setView([24.7566, 46.6200], 11);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://osm.org">OpenStreetMap</a> &copy; <a href="https://carto.com">CARTO</a>',
+        subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+
+    // Move zoom control to the correct corner
+    map.zoomControl.setPosition('bottomright');
+
+    var markers = {};      // id → leaflet marker
+    var nearestId = null;
+
+    function makeMarkerIcon(loc, isNearest) {
+        var cls = 'hpc-marker status-' + loc.status + (isNearest ? ' nearest-glow' : '');
+        return L.divIcon({
+            className: '',
+            html: '<div class="' + cls + '"><i class="fa-solid fa-bolt"></i></div>',
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+            popupAnchor: [0, -38]
+        });
+    }
+
+    function buildPopup(loc) {
+        var name  = isEn() ? loc.name_en  : loc.name_ar;
+        var hood  = isEn() ? loc.hood_en  : loc.hood_ar;
+        var hours = isEn() ? loc.hours_en : loc.hours_ar;
+        return '<div style="direction:' + (isEn()?'ltr':'rtl') + ';font-family:Cairo,sans-serif;">'
+             + '<strong style="font-size:0.95rem;">' + name + '</strong><br>'
+             + '<span style="color:rgba(255,255,255,0.55);font-size:0.78rem;">' + hood + '</span><br><br>'
+             + statusIcon(loc.status) + ' <span style="font-size:0.82rem;">' + statusLabel(loc.status) + '</span><br>'
+             + '<i class="fa-solid fa-bicycle" style="color:#7ee88a;margin-left:4px;"></i> '
+             + '<span style="font-size:0.82rem;">' + loc.bikes + '/' + loc.total + (isEn() ? ' bikes' : ' دراجات') + '</span><br><br>'
+             + '<a href="' + loc.gmaps + '" target="_blank" rel="noopener" style="color:#7ee88a;font-size:0.82rem;font-weight:700;">'
+             + '<i class="fa-solid fa-diamond-turn-right"></i> ' + (isEn() ? 'Get Directions' : 'الاتجاهات') + '</a>'
+             + '</div>';
+    }
+
+    LOCATIONS.forEach(function(loc) {
+        var marker = L.marker([loc.lat, loc.lng], { icon: makeMarkerIcon(loc, false) })
+            .addTo(map)
+            .bindPopup(buildPopup(loc), { maxWidth: 220 });
+        marker.on('click', function() { highlightCard(loc.id); });
+        markers[loc.id] = marker;
+    });
+
+    function refreshMarkers() {
+        LOCATIONS.forEach(function(loc) {
+            markers[loc.id].setIcon(makeMarkerIcon(loc, loc.id === nearestId));
+            markers[loc.id].setPopupContent(buildPopup(loc));
+        });
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Cards rendering
+    ═══════════════════════════════════════════════════ */
+    var currentFilter = '';
+    var currentSearch = '';
+
+    function buildCard(loc, isNearest) {
+        var name  = isEn() ? loc.name_en  : loc.name_ar;
+        var hood  = isEn() ? loc.hood_en  : loc.hood_ar;
+        var hours = isEn() ? loc.hours_en : loc.hours_ar;
+        var nearest = isNearest
+            ? '<div class="nearest-badge"><i class="fa-solid fa-location-crosshairs"></i> '
+              + (isEn() ? 'Nearest to You' : 'الأقرب إليك') + '</div>' : '';
+        var cardCls = 'loc-card' + (isNearest ? ' card-nearest' : '');
+        return '<div class="' + cardCls + '" id="card-' + loc.id + '" onclick="focusLocation(' + loc.id + ')">'
+             + nearest
+             + '<div class="card-top">'
+             +   '<div>'
+             +     '<div class="card-name">' + name + '</div>'
+             +     '<div class="card-neighborhood"><i class="fa-solid fa-map-pin" style="color:#7ee88a;font-size:0.7rem;margin-left:4px;"></i>' + hood + '</div>'
+             +   '</div>'
+             +   '<span class="status-badge status-' + loc.status + '">'
+             +     '<span class="status-dot"></span>' + statusLabel(loc.status)
+             +   '</span>'
+             + '</div>'
+             + '<div class="card-meta">'
+             +   '<div class="card-meta-item"><i class="fa-solid fa-bicycle"></i>'
+             +     '<span>' + (isEn() ? 'Bikes: ' : 'الدراجات: ') + '<strong>' + loc.bikes + '/' + loc.total + '</strong></span>'
+             +   '</div>'
+             +   '<div class="card-meta-item"><i class="fa-regular fa-clock"></i>'
+             +     '<span>' + hours + '</span>'
+             +   '</div>'
+             + '</div>'
+             + '<a href="' + loc.gmaps + '" target="_blank" rel="noopener" class="directions-btn" onclick="event.stopPropagation()">'
+             +   '<i class="fa-solid fa-diamond-turn-right"></i>'
+             +   (isEn() ? 'Get Directions' : 'الاتجاهات')
+             + '</a>'
+             + '</div>';
+    }
+
+    function renderCards() {
+        var q = currentSearch.toLowerCase();
+        var filtered = LOCATIONS.filter(function(loc) {
+            var name = (isEn() ? loc.name_en : loc.name_ar).toLowerCase();
+            var hood = (isEn() ? loc.hood_en : loc.hood_ar).toLowerCase();
+            var matchSearch = !q || name.includes(q) || hood.includes(q)
+                              || loc.name_ar.toLowerCase().includes(q)
+                              || loc.hood_ar.toLowerCase().includes(q);
+            var matchStatus = !currentFilter || loc.status === currentFilter;
+            return matchSearch && matchStatus;
+        });
+
+        // Put nearest first
+        filtered.sort(function(a, b) {
+            if (a.id === nearestId) return -1;
+            if (b.id === nearestId) return 1;
+            return 0;
+        });
+
+        var list = document.getElementById('locations-list');
+        var count = document.getElementById('results-count');
+
+        if (filtered.length === 0) {
+            list.innerHTML = '<div class="no-results">'
+                + '<i class="fa-solid fa-location-dot"></i>'
+                + '<p>' + (isEn() ? 'No locations match your search.' : 'لم يُعثر على موقع مطابق.') + '</p>'
+                + '</div>';
+            count.innerHTML = '';
+            return;
+        }
+
+        count.innerHTML = (isEn() ? 'Showing <strong>' : 'يعرض <strong>') + filtered.length
+            + '</strong>' + (isEn() ? ' location(s)' : ' موقع');
+
+        list.innerHTML = filtered.map(function(loc) {
+            return buildCard(loc, loc.id === nearestId);
+        }).join('');
+    }
+
+    function focusLocation(id) {
+        var loc = LOCATIONS.find(function(l) { return l.id === id; });
+        if (!loc) return;
+        map.flyTo([loc.lat, loc.lng], 15, { duration: 0.8 });
+        markers[id].openPopup();
+        highlightCard(id);
+    }
+
+    function highlightCard(id) {
+        document.querySelectorAll('.loc-card').forEach(function(c) {
+            c.classList.remove('card-highlighted');
+        });
+        var card = document.getElementById('card-' + id);
+        if (card) {
+            card.classList.add('card-highlighted');
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       Locate Me
+    ═══════════════════════════════════════════════════ */
+    document.getElementById('locate-btn').addEventListener('click', function() {
+        var btn = this;
+        btn.classList.add('locating');
+        if (!navigator.geolocation) {
+            alert(isEn() ? 'Geolocation not supported.' : 'المتصفح لا يدعم تحديد الموقع.');
+            btn.classList.remove('locating');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                btn.classList.remove('locating');
+                var uLat = pos.coords.latitude, uLng = pos.coords.longitude;
+
+                // Find nearest
+                var minDist = Infinity, minId = null;
+                LOCATIONS.forEach(function(loc) {
+                    var d = haversine(uLat, uLng, loc.lat, loc.lng);
+                    if (d < minDist) { minDist = d; minId = loc.id; }
+                });
+                nearestId = minId;
+
+                // User marker
+                if (window._userMarker) map.removeLayer(window._userMarker);
+                window._userMarker = L.circleMarker([uLat, uLng], {
+                    radius: 10, color: '#7ee88a', weight: 3,
+                    fillColor: '#fff', fillOpacity: 0.9
+                }).addTo(map).bindPopup(isEn() ? '📍 You are here' : '📍 موقعك الحالي').openPopup();
+
+                var nearest = LOCATIONS.find(function(l) { return l.id === nearestId; });
+                map.flyTo([nearest.lat, nearest.lng], 14, { duration: 1 });
+                refreshMarkers();
+                renderCards();
+                focusLocation(nearestId);
+            },
+            function() {
+                btn.classList.remove('locating');
+                alert(isEn() ? 'Could not get your location.' : 'تعذّر الحصول على موقعك.');
+            },
+            { timeout: 10000 }
+        );
+    });
+
+    /* ═══════════════════════════════════════════════════
+       Search & Filter
+    ═══════════════════════════════════════════════════ */
+    document.getElementById('search-input').addEventListener('input', function() {
+        currentSearch = this.value;
+        renderCards();
+    });
+    document.getElementById('filter-select').addEventListener('change', function() {
+        currentFilter = this.value;
+        renderCards();
+    });
+
+    /* ═══════════════════════════════════════════════════
+       Suggest form submit
+    ═══════════════════════════════════════════════════ */
+    document.getElementById('submit-suggest-btn').addEventListener('click', function() {
+        var hood = document.getElementById('f-hood').value.trim();
+        var loc  = document.getElementById('f-loc').value.trim();
+        if (!hood || !loc) {
+            alert(isEn() ? 'Please fill in the required fields.' : 'يرجى تعبئة الحقول المطلوبة.');
+            return;
+        }
+        // Simulate submission
+        document.getElementById('suggest-form-wrap').style.display = 'none';
+        document.getElementById('suggest-success').style.display = 'block';
+        document.getElementById('suggest-footer').style.display = 'none';
+    });
+
+    // Reset form when modal closes
+    document.getElementById('suggestModal').addEventListener('hidden.bs.modal', function() {
+        document.getElementById('suggest-form-wrap').style.display = '';
+        document.getElementById('suggest-success').style.display = 'none';
+        document.getElementById('suggest-footer').style.display = '';
+        ['f-name','f-hood','f-loc','f-reason','f-contact'].forEach(function(id) {
+            document.getElementById(id).value = '';
+        });
+    });
+
+    /* ═══════════════════════════════════════════════════
+       Language switch hook
+    ═══════════════════════════════════════════════════ */
+    (function() {
+        var _orig = window.applyLang;
+        window.applyLang = function(lang) {
+            _orig(lang);
+            refreshMarkers();
+            renderCards();
+            // Update placeholders manually (data-i18n-placeholder)
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-placeholder');
+                if (window.t) el.placeholder = window.t(key);
+            });
+            // Update select options
+            document.querySelectorAll('#filter-select option[data-i18n]').forEach(function(opt) {
+                var key = opt.getAttribute('data-i18n');
+                if (window.t) opt.textContent = window.t(key);
+            });
+        };
+    })();
+
+    /* ═══ Initial render ═══ */
+    renderCards();
+
+    // Apply placeholder after i18n loads
+    setTimeout(function() {
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-placeholder');
+            if (window.t) el.placeholder = window.t(key);
+        });
+    }, 600);
+    </script>
+</body>
+</html>

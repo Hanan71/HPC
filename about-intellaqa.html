@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيش هو اِنطلاقة-HPC؟</title>
+    <link rel="icon" href="img/logo1.png">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+    <style>
+        /* ═══ Base ═══ */
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            background: var(--dark, #0a2c1c);
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ═══ Full-page floating bolts ═══ */
+        #page-bolts {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .page-bolt {
+            position: absolute;
+            bottom: -100px;
+            right: var(--bx, 20%);
+            font-size: var(--bs, 2rem);
+            color: #7ee88a;
+            opacity: 0;
+            animation: pageBoltRise var(--bd, 10s) ease-in-out infinite var(--bdelay, 0s);
+            will-change: transform, opacity;
+        }
+        @keyframes pageBoltRise {
+            0%   { transform: translateY(0)      rotate(var(--br, -10deg)) scale(1);    opacity: 0; }
+            10%  { opacity: var(--bo, 0.08); }
+            80%  { opacity: var(--bo, 0.08); }
+            100% { transform: translateY(-110vh) rotate(calc(var(--br, -10deg) + 25deg)) scale(0.7); opacity: 0; }
+        }
+
+        /* everything above the bolt layer */
+        .above-bolts { position: relative; z-index: 1; }
+
+        /* ═══ Hero ═══ */
+        .about-hero {
+            background: linear-gradient(170deg, rgba(15,66,41,0.98) 0%, rgba(8,36,22,0.98) 100%);
+            border-bottom: 1px solid rgba(52,142,56,0.3);
+            padding: 70px 20px 50px;
+            text-align: center;
+        }
+        .hero-logo {
+            width: clamp(64px, 10vw, 90px);
+            height: auto;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 4px 18px rgba(52,142,56,0.5));
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50%       { transform: translateY(-8px) scale(1.03); }
+        }
+        .about-slogan {
+            font-weight: 900;
+            font-size: clamp(1.7rem, 5vw, 2.8rem);
+            color: #fff;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 18px rgba(0,0,0,0.4);
+        }
+        .about-slogan .slogan-dot { color: #7ee88a; }
+        .about-slogan .fa-bolt { font-size: 0.75em; color: #f9e547; vertical-align: middle; }
+        .about-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: clamp(0.88rem, 2vw, 1rem);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ═══ Main section ═══ */
+        .main-section {
+            padding: 60px 0 50px;
+        }
+        .main-container { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+        /* Device image column */
+        .device-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .device-img-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .device-img {
+            width: clamp(200px, 32vw, 340px);
+            height: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 16px 40px rgba(0,0,0,0.55));
+            animation: deviceFloat 4.5s ease-in-out infinite;
+        }
+        @keyframes deviceFloat {
+            0%, 100% { transform: translateY(0) rotate(-1deg); }
+            50%       { transform: translateY(-12px) rotate(1deg); }
+        }
+        /* Spotlight cone */
+        .device-img-wrap::before {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 420px;
+            background: conic-gradient(
+                from 255deg at 50% 0%,
+                transparent 0deg,
+                rgba(126,232,138,0.10) 22deg,
+                rgba(255,255,255,0.18) 44deg,
+                rgba(126,232,138,0.10) 66deg,
+                transparent 88deg
+            );
+            z-index: 1;
+            pointer-events: none;
+            animation: spotPulse 4.5s ease-in-out infinite;
+        }
+        /* Floor glow */
+        .device-img-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px; height: 22px;
+            background: radial-gradient(ellipse, rgba(126,232,138,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: spotPulse 4.5s ease-in-out infinite;
+        }
+        @keyframes spotPulse {
+            0%, 100% { opacity: 0.75; }
+            50%       { opacity: 1.0; }
+        }
+
+        /* Guide column */
+        .guide-col { padding: clamp(16px, 4vw, 36px); }
+
+        .guide-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(126,232,138,0.1);
+            border: 1px solid rgba(126,232,138,0.3);
+            border-radius: 20px;
+            color: #7ee88a;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 14px;
+            margin-bottom: 14px;
+        }
+        .guide-title {
+            color: #fff;
+            font-weight: 900;
+            font-size: clamp(1.2rem, 3vw, 1.65rem);
+            line-height: 1.4;
+            margin-bottom: 24px;
+        }
+        .guide-title span { color: #7ee88a; }
+
+        /* Steps */
+        .step-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(52,142,56,0.18);
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            transition: background 0.25s, border-color 0.25s, transform 0.2s;
+        }
+        .step-card:hover {
+            background: rgba(52,142,56,0.1);
+            border-color: rgba(52,142,56,0.45);
+            transform: translateX(-4px);
+        }
+        [lang="en"] .step-card:hover { transform: translateX(4px); }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #348E38, #2d7a31);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(52,142,56,0.4);
+        }
+        .step-icon {
+            flex-shrink: 0;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(126,232,138,0.1);
+            border: 1px solid rgba(126,232,138,0.25);
+            color: #7ee88a;
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .step-body { flex: 1; }
+        .step-title {
+            color: #fff;
+            font-weight: 900;
+            font-size: 0.95rem;
+            margin-bottom: 3px;
+        }
+        .step-desc {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Divider */
+        .about-divider {
+            height: 1px;
+            background: linear-gradient(to left, transparent, rgba(52,142,56,0.35), transparent);
+            margin: 48px auto;
+            max-width: 900px;
+        }
+
+        /* ═══ Benefits strip ═══ */
+        .benefits-section { padding: 0 0 56px; }
+        .benefits-title {
+            text-align: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: clamp(1.1rem, 3vw, 1.45rem);
+            margin-bottom: 28px;
+        }
+        .benefits-title span { color: #7ee88a; }
+        .benefit-card {
+            text-align: center;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(52,142,56,0.18);
+            border-radius: 20px;
+            padding: 28px 20px;
+            height: 100%;
+            transition: transform 0.25s, background 0.25s;
+        }
+        .benefit-card:hover { transform: translateY(-5px); background: rgba(52,142,56,0.1); }
+        .benefit-icon {
+            font-size: 2.2rem;
+            margin-bottom: 14px;
+            display: block;
+            line-height: 1;
+            color: rgba(255,255,255,0.65);
+        }
+        .benefit-name {
+            color: #fff;
+            font-weight: 900;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        .benefit-desc {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* ═══ HPC card (replicated from workout-session.html) ═══ */
+        .hpc-section { padding: 0 0 60px; }
+        .hpc-card {
+            max-width: 680px;
+            margin: 0 auto;
+            background: rgba(52,142,56,0.08);
+            border: 1.5px solid rgba(52,142,56,0.35);
+            border-radius: 22px;
+            padding: 36px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hpc-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(126,232,138,0.08) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .hpc-letters {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 22px;
+            direction: ltr;
+        }
+        .hpc-letter {
+            width: 64px; height: 64px;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+        .hpc-h { background: linear-gradient(135deg,#1a6e2e,#1b5e20); color: #a5d6a7; border: 1px solid rgba(165,214,167,0.3); }
+        .hpc-p { background: linear-gradient(135deg,#2e7d32,#1b5e20); color: #c8e6c9; border: 1px solid rgba(200,230,201,0.3); }
+        .hpc-c { background: linear-gradient(135deg,#388e3c,#2e7d32); color: #e8f5e9; border: 1px solid rgba(232,245,233,0.3); }
+        .hpc-card h3 {
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        .hpc-card p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.93rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+        .hpc-card p strong { color: #7ee88a; }
+
+        /* ═══ Telegram CTA ═══ */
+        .tg-section { padding: 0 0 60px; }
+        .tg-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(41,182,246,0.25);
+            border-radius: 24px;
+            padding: 40px 32px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Top accent line */
+        .tg-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%; right: 10%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(41,182,246,0.6), transparent);
+            border-radius: 2px;
+        }
+        /* Subtle radial background */
+        .tg-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(41,182,246,0.07) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        /* Glow pulse ring behind icon */
+        .tg-glow-ring {
+            position: absolute;
+            top: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(41,182,246,0.18) 0%, transparent 70%);
+            animation: tgRingPulse 2.6s ease-in-out infinite;
+            z-index: 0;
+        }
+        @keyframes tgRingPulse {
+            0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.7; }
+            50%       { transform: translateX(-50%) scale(1.35); opacity: 1;   }
+        }
+        .tg-icon-wrap {
+            position: relative;
+            z-index: 1;
+            font-size: 3rem;
+            color: #29b6f6;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 14px rgba(41,182,246,0.5));
+        }
+        .tg-heading {
+            color: #fff;
+            font-weight: 900;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+        .tg-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: linear-gradient(135deg, #0088cc, #006faa);
+            color: #fff !important;
+            text-decoration: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            padding: 13px 32px;
+            border-radius: 50px;
+            box-shadow: 0 6px 22px rgba(0,136,204,0.45);
+            transition: transform 0.22s, box-shadow 0.22s;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+        .tg-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0,136,204,0.6);
+        }
+        .tg-btn i { font-size: 1.15em; }
+        .tg-subtext {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: rgba(41,182,246,0.07);
+            border: 1px solid rgba(41,182,246,0.18);
+            border-radius: 14px;
+            padding: 12px 18px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.82rem;
+            line-height: 1.7;
+            text-align: start;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+        }
+        .tg-subtext i { flex-shrink: 0; margin-top: 3px; color: rgba(41,182,246,0.7); }
+
+        /* ═══ Sponsors ticker ═══ */
+        .sponsors-ticker-container {
+            width: 100%;
+            background: rgba(15,66,41,0.9);
+            border-top: 2px solid rgba(52,142,56,0.3);
+            padding: 15px 0;
+            overflow: hidden;
+        }
+        .ticker-wrapper {
+            display: flex;
+            width: max-content;
+            animation: aboutTickerSlide 25s linear infinite;
+        }
+        .ticker-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 40px; color: #fff;
+            font-weight: 700; font-size: 1.1rem; white-space: nowrap;
+        }
+        .sponsor-logo {
+            height: 40px; width: auto; object-fit: contain;
+            filter: grayscale(100%) brightness(200%);
+            transition: filter 0.3s;
+        }
+        .sponsor-logo:hover { filter: none; }
+        @keyframes aboutTickerSlide {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ═══ Top navigation bar ═══ */
+        .about-topnav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: rgba(8,36,22,0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(52,142,56,0.22);
+            z-index: 9999;
+            pointer-events: auto;
+        }
+        .about-topnav .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(52,142,56,0.18);
+            border: 1.5px solid rgba(126,232,138,0.4);
+            color: #e8ffe8 !important;
+            padding: 8px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.22s, border-color 0.22s, transform 0.18s, box-shadow 0.18s;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .about-topnav .nav-btn:hover {
+            background: rgba(52,142,56,0.42);
+            border-color: rgba(126,232,138,0.75);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52,142,56,0.32);
+            color: #fff !important;
+        }
+        .about-topnav .nav-btn:active { transform: scale(0.96); }
+        .about-topnav .nav-btn i { font-size: 0.92em; }
+        [dir="ltr"] .back-arrow { display: inline-block; transform: scaleX(-1); }
+
+        /* Suppress the global floating login-nav-btn — nav bar handles it */
+        .login-nav-btn { display: none !important; }
+
+        /* Hero top padding keeps content below the fixed nav bar */
+        .about-hero { padding-top: 88px; }
+
+        /* ═══ Responsive ═══ */
+        @media (max-width: 767px) {
+            .device-col { margin-bottom: 24px; }
+            .device-img { width: clamp(160px, 55vw, 240px); }
+            .device-img-wrap::before { width: 200px; height: 300px; }
+            .guide-col { padding: 0 8px; }
+            .hpc-card { padding: 28px 22px; }
+            .hpc-letter { width: 52px; height: 52px; font-size: 1.6rem; }
+            .ticker-item { font-size: 0.78rem; padding: 0 14px; gap: 6px; }
+            .sponsor-logo { height: 24px; }
+        }
+        @media (max-width: 480px) {
+            .about-topnav .nav-btn span.nav-text { display: none; }
+            .about-topnav .nav-btn { padding: 9px 12px; gap: 0; }
+            .about-topnav { height: 52px; }
+            .about-hero { padding-top: 78px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full-page bolt layer -->
+    <div id="page-bolts"></div>
+
+    <!-- ═══ Fixed top navigation bar ═══ -->
+    <nav class="about-topnav" role="navigation" aria-label="Top navigation">
+        <!-- Right side: Back / Home (RTL start) -->
+        <a href="index.html" class="nav-btn" onclick="event.preventDefault(); history.back();" aria-label="الرئيسية">
+            <i class="fa-solid fa-chevron-right back-arrow"></i>
+            <span class="nav-text" data-i18n="back_home">الرئيسية</span>
+        </a>
+
+        <!-- Center: Language toggle -->
+        <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLang()" aria-label="Toggle language"
+                style="position:static;bottom:auto;margin:0;">
+            <span data-i18n="toggle_label">EN</span>
+            <i class="fa-solid fa-globe"></i>
+        </button>
+
+        <!-- Left side: Login -->
+        <a href="auth-login.html" class="nav-btn" aria-label="تسجيل الدخول">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span class="nav-text" data-i18n="login_nav_btn">ابدأ بتوليد الطاقة</span>
+        </a>
+    </nav>
+
+    <!-- ══════════════════════════════════════
+         HERO
+    ══════════════════════════════════════ -->
+    <section class="about-hero above-bolts">
+        <a href="index.html"><img src="img/logo1.png" class="hero-logo" alt="اِنطلاقة HPC logo" style="cursor:pointer;"></a>
+        <h1 class="about-slogan">
+            <span data-i18n="about_slogan_1">تحرك</span>
+            <span class="slogan-dot"> .. </span>
+            <span data-i18n="about_slogan_2">اشحن</span>
+            <span class="slogan-dot"> .. </span>
+            <span data-i18n="about_slogan_3">انقذ الكوكب</span>
+            <i class="fa-solid fa-bolt ms-2"></i>
+        </h1>
+        <p class="about-subtitle" data-i18n="about_subtitle">
+            دراجة اِنطلاقة-HPC — حوّل جهدك الجسدي إلى كهرباء خضراء حقيقية وكافآت لا تنتهي
+        </p>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         MAIN: DEVICE + GUIDE
+    ══════════════════════════════════════ -->
+    <section class="main-section above-bolts">
+        <div class="main-container">
+            <div class="row align-items-center g-4">
+
+                <!-- Device image -->
+                <div class="col-md-5 device-col">
+                    <div class="device-img-wrap">
+                        <img src="img/bike-front.png" class="device-img" alt="دراجة اِنطلاقة HPC">
+                    </div>
+                </div>
+
+                <!-- How-to guide -->
+                <div class="col-md-7 guide-col">
+                    <div class="guide-label">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span data-i18n="about_guide_label">كيف تستخدمه؟</span>
+                    </div>
+                    <h2 class="guide-title">
+                        <span data-i18n="about_guide_title">خطوات بسيطة، فائدة </span>
+                        <span data-i18n="about_guide_title2">مزدوجة</span>
+                    </h2>
+
+                    <!-- Step 1 -->
+                    <div class="step-card">
+                        <div class="step-num">١</div>
+                        <div class="step-body">
+                            <div class="step-title" data-i18n="about_step1_title">اركب الدراجة 🚲</div>
+                            <p class="step-desc" data-i18n="about_step1_body">
+                                اجلس على دراجة اِنطلاقة-HPC في أي موقع متاح — بدون حجز مسبق.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-card">
+                        <div class="step-num">٢</div>
+                        <div class="step-body">
+                            <div class="step-title" data-i18n="about_step2_title">امسح رمز QR 📲</div>
+                            <p class="step-desc" data-i18n="about_step2_body">
+                                سجّل دخولك عبر تطبيق اِنطلاقة أو امسح الرمز مباشرة من الشاشة لتُفعّل الجهاز.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-card">
+                        <div class="step-num">٣</div>
+                        <div class="step-body">
+                            <div class="step-title" data-i18n="about_step3_title">ابدأ التمرين ⚡</div>
+                            <p class="step-desc" data-i18n="about_step3_body">
+                                كل دورة للدواسة تُولّد طاقة كهربائية حقيقية تُضخ في الشبكة الخضراء — تتابع واطك لحظة بلحظة.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-card">
+                        <div class="step-num">٤</div>
+                        <div class="step-body">
+                            <div class="step-title" data-i18n="about_step4_title">اجمع نقاطك 🏆</div>
+                            <p class="step-desc" data-i18n="about_step4_body">
+                                تتراكم نقاطك تلقائياً في لوحة المتصدرين — كن في القمة واحصل على مكافآت حقيقية.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         DIVIDER
+    ══════════════════════════════════════ -->
+    <div class="about-divider above-bolts"></div>
+
+    <!-- ══════════════════════════════════════
+         BENEFITS
+    ══════════════════════════════════════ -->
+    <section class="benefits-section above-bolts">
+        <div class="main-container">
+            <h2 class="benefits-title">
+                <span data-i18n="about_benefits_title">ليش اِنطلاقة؟ </span>
+                <span data-i18n="about_benefits_title2">ثلاث فوائد بتمرين واحد</span>
+            </h2>
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="benefit-card">
+                        <span class="benefit-icon" style="display:flex;align-items:center;justify-content:center;gap:5px;">
+                            <!-- Man -->
+                            <span style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+                                <i class="fa-solid fa-person-running"></i>
+                            </span>
+                            <!-- Child + Heart -->
+                            <span style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;">
+                                <i class="fa-solid fa-heart" style="font-size:0.38em;color:rgba(255,255,255,0.55);"></i>
+                                <i class="fa-solid fa-child-reaching" style="font-size:0.7em;"></i>
+                            </span>
+                            <!-- Woman -->
+                            <span style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;">
+                                <i class="fa-solid fa-circle" style="font-size:0.2em;color:rgba(255,182,193,0.85);"></i>
+                                <i class="fa-solid fa-person-running" style="transform:scaleX(-1);color:rgba(255,200,210,0.9);"></i>
+                            </span>
+                        </span>
+                        <div class="benefit-name" data-i18n="about_ben1_title">صحتك أولاً</div>
+                        <p class="benefit-desc" data-i18n="about_ben1_body">
+                            تمرين قلبي وعائي يبني جسماً أقوى، يحرق سعرات حرارية، ويرفع مستوى طاقتك اليومية.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="benefit-card">
+                        <span class="benefit-icon">
+                            <i class="fa-solid fa-earth-americas"></i>
+                            <i class="fa-solid fa-bolt" style="font-size:0.55em;vertical-align:super;opacity:0.75;margin-right:3px;"></i>
+                        </span>
+                        <div class="benefit-name" data-i18n="about_ben2_title">أنقذ الكوكب</div>
+                        <p class="benefit-desc" data-i18n="about_ben2_body">
+                            جهدك يتحوّل إلى كهرباء نظيفة تُقلّل بصمتك الكربونية وتُسهم في مستقبل أخضر مستدام.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="benefit-card">
+                        <span class="benefit-icon">
+                            <i class="fa-solid fa-coins"></i>
+                            <i class="fa-solid fa-gift" style="font-size:0.55em;vertical-align:super;opacity:0.75;margin-right:3px;"></i>
+                        </span>
+                        <div class="benefit-name" data-i18n="about_ben3_title">اكسب مكافآت</div>
+                        <p class="benefit-desc" data-i18n="about_ben3_body">
+                            تراكم نقاطك مع كل واط تُنتجه — تصدّر القائمة، وتأهّل للجوائز والمكافآت الحصرية.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         HPC CARD
+    ══════════════════════════════════════ -->
+    <section class="hpc-section above-bolts">
+        <div class="main-container">
+            <div class="hpc-card">
+                <div class="hpc-letters">
+                    <div class="hpc-letter hpc-h">H</div>
+                    <div class="hpc-letter hpc-p">P</div>
+                    <div class="hpc-letter hpc-c">C</div>
+                </div>
+                <h3 data-i18n="device_hpc_title">ماذا يعني HPC؟</h3>
+                <p data-i18n="device_hpc_body">
+                    HPC هو اختصار لـ <strong>Human Power Center</strong> — مركز الطاقة البشري، حيث تتحوّل طاقتك الجسدية إلى كهرباء خضراء حقيقية.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         TELEGRAM CTA
+    ══════════════════════════════════════ -->
+    <section class="tg-section above-bolts">
+        <div class="main-container">
+            <div class="tg-card">
+                <!-- Glow pulse ring -->
+                <div class="tg-glow-ring"></div>
+                <!-- Icon -->
+                <div class="tg-icon-wrap">
+                    <i class="fa-brands fa-telegram"></i>
+                </div>
+                <!-- Text -->
+                <h3 class="tg-heading" data-i18n="about_tg_heading">انضم لمجتمع اِنطلاقة على تليجرام</h3>
+                <!-- Button -->
+                <a href="https://t.me/HPC_earning" target="_blank" rel="noopener" class="tg-btn">
+                    <i class="fa-brands fa-telegram"></i>
+                    <span data-i18n="about_tg_btn">انضم الآن</span>
+                </a>
+                <!-- Subtext badge -->
+                <div class="tg-subtext">
+                    <i class="fa-solid fa-lock" style="font-size:0.75em;opacity:0.7;"></i>
+                    <span data-i18n="about_tg_sub">انضم لمجتمع اِنطلاقة المخصص لعدد محدد من المختارين، واستمتع بمميزات مكافآت خاصة وحصرية مستقبلاً.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SPONSORS TICKER
+    ══════════════════════════════════════ -->
+    <div class="sponsors-ticker-container above-bolts">
+        <div class="ticker-wrapper" dir="ltr">
+            <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+            <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+            <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+            <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+            <div class="ticker-item"><img src="img/logo6.png" class="sponsor-logo" alt="راعي"><span></span></div>
+            <div class="ticker-item"><img src="img/logo7.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_starbucks">StarBucks</span></div>
+            <div class="ticker-item"><img src="img/logo8.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kfmc">مدينة الملك فهد الطبية</span></div>
+            <div class="ticker-item"><img src="img/logo9.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_kaust">KAUST</span></div>
+            <div class="ticker-item"><img src="img/logo2.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_nike">نايك</span></div>
+            <div class="ticker-item"><img src="img/logo3.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_energy">وزارة الطاقة</span></div>
+            <div class="ticker-item"><img src="img/logo4.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_riyadh">الرياض الخضراء</span></div>
+            <div class="ticker-item"><img src="img/logo5.png" class="sponsor-logo" alt="راعي"><span data-i18n="sponsor_monshaat">منشآت</span></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer above-bolts">
+        <span data-i18n="footer_rights">‏⚡ جميع الحقوق محفوظة لفريق اِنطلاقة-HPC</span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    /* ═══ Spawn full-page bolts ═══ */
+    (function spawnPageBolts() {
+        var bg = document.getElementById('page-bolts');
+        if (!bg) return;
+        var configs = [
+            { bs:'2.8rem', bx:'4%',  bd:'9s',   bdelay:'-2s',   br:'-12deg', bo:0.07 },
+            { bs:'1.4rem', bx:'13%', bd:'13s',  bdelay:'-7s',   br:'8deg',   bo:0.06 },
+            { bs:'4rem',   bx:'24%', bd:'8s',   bdelay:'-3.5s', br:'-20deg', bo:0.07 },
+            { bs:'1.8rem', bx:'37%', bd:'11s',  bdelay:'-5s',   br:'14deg',  bo:0.06 },
+            { bs:'3.2rem', bx:'50%', bd:'7.5s', bdelay:'-1s',   br:'-6deg',  bo:0.08 },
+            { bs:'1.2rem', bx:'62%', bd:'14s',  bdelay:'-9s',   br:'22deg',  bo:0.05 },
+            { bs:'4.4rem', bx:'73%', bd:'10s',  bdelay:'-4s',   br:'-26deg', bo:0.07 },
+            { bs:'2.2rem', bx:'84%', bd:'8.5s', bdelay:'-6s',   br:'5deg',   bo:0.06 },
+            { bs:'1.6rem', bx:'93%', bd:'12s',  bdelay:'-8.5s', br:'-16deg', bo:0.06 },
+            { bs:'3.6rem', bx:'45%', bd:'9.5s', bdelay:'-2.5s', br:'18deg',  bo:0.05 },
+            { bs:'1.1rem', bx:'57%', bd:'16s',  bdelay:'-11s',  br:'-9deg',  bo:0.05 },
+            { bs:'2.6rem', bx:'79%', bd:'11.5s',bdelay:'-3s',   br:'12deg',  bo:0.06 },
+        ];
+        configs.forEach(function(c) {
+            var el = document.createElement('i');
+            el.className = 'fa-solid fa-bolt page-bolt';
+            el.style.cssText =
+                '--bx:' + c.bx + ';--bs:' + c.bs + ';--bd:' + c.bd +
+                ';--bdelay:' + c.bdelay + ';--br:' + c.br + ';--bo:' + c.bo + ';';
+            bg.appendChild(el);
+        });
+    })();
+
+    /* ═══ Language switch: re-apply i18n for dynamic text ═══ */
+    (function() {
+        var _orig = window.applyLang;
+        window.applyLang = function(lang) {
+            if (_orig) _orig(lang);
+        };
+    })();
+    </script>
+</body>
+</html>

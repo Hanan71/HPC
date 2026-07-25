@@ -1,0 +1,18 @@
+{
+    "heroes": [
+        { "name": "أحمد العتيبي",   "name_en": "Ahmad Al-Otaibi",       "energy": "⚡ 5200w", "img": "img/carousel2-3.png" },
+        { "name": "سارة محمد",       "name_en": "Sara Mohammed",          "energy": "⚡ 4800w", "img": "img/carousel2-1.png" },
+        { "name": "خالد الشمري",    "name_en": "Khalid Al-Shammari",     "energy": "⚡ 4100w", "img": "img/carousel2-3.png" },
+        { "name": "نورة القحطاني",  "name_en": "Noura Al-Qahtani",       "energy": "⚡ 3900w", "img": "img/carousel2-1.png" },
+        { "name": "فيصل الحربي",    "name_en": "Faisal Al-Harbi",        "energy": "⚡ 3500w", "img": "img/carousel2-2.png", "vip": true },
+        { "name": "ريم الدوسري",    "name_en": "Reem Al-Dosari",         "energy": "⚡ 3100w", "img": "img/carousel2-1.png" }
+    ],
+    "supporters": [
+        { "name": "عبدالعزيز بن خالد", "name_en": "Abdulaziz bin Khalid",  "img": "img/carousel2-3.png" },
+        { "name": "مها عبدالله",        "name_en": "Maha Abdullah",          "img": "img/carousel2-1.png" },
+        { "name": "Max",                 "name_en": "Max",                    "img": "img/carousel2-2.png" },
+        { "name": "عبدالرحمن العلي",   "name_en": "Abdulrahman Al-Ali",     "img": "img/carousel2-3.png" },
+        { "name": "هند المطيري",        "name_en": "Hind Al-Mutairi",        "img": "img/carousel2-1.png" },
+        { "name": "فيصل الحربي",        "name_en": "Faisal Al-Harbi",        "img": "img/carousel2-2.png" }
+    ]
+}
