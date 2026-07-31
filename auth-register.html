@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب جديد - اِنطلاقة</title>
+    <link rel="icon" href="img/logo1.png">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: var(--dark, #0a2c1c);
+            font-family: 'Cairo', sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            padding: 80px 16px 50px;
+            position: relative; overflow-x: hidden;
+        }
+
+        /* ── Bolts ── */
+        #page-bolts { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+        .page-bolt {
+            position: absolute; bottom: -100px; right: var(--bx, 20%);
+            font-size: var(--bs, 2rem); color: #7ee88a; opacity: 0;
+            animation: pageBoltRise var(--bd, 10s) ease-in-out infinite var(--bdelay, 0s);
+        }
+        @keyframes pageBoltRise {
+            0%   { transform: translateY(0) rotate(var(--br,-10deg)) scale(1); opacity: 0; }
+            10%  { opacity: var(--bo, 0.07); }
+            82%  { opacity: var(--bo, 0.07); }
+            100% { transform: translateY(-110vh) rotate(calc(var(--br,-10deg)+25deg)) scale(0.7); opacity: 0; }
+        }
+
+        /* ── Back btn ── */
+        .back-home-btn {
+            position: fixed; top: 14px; inset-inline-start: 16px;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff !important; padding: 7px 16px; border-radius: 30px;
+            text-decoration: none; font-weight: 700; font-size: 0.85rem;
+            backdrop-filter: blur(5px); transition: all 0.3s; z-index: 1050;
+        }
+        .back-home-btn:hover { background: #fff; color: var(--dark) !important; }
+        [dir="ltr"] .back-arrow { transform: scaleX(-1); }
+
+        /* ── Toast ── */
+        .toast-msg {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(15,66,41,0.95); border: 1px solid rgba(52,142,56,0.4);
+            color: #fff; border-radius: 30px; padding: 10px 24px; font-size: 0.85rem;
+            font-weight: 700; white-space: nowrap; backdrop-filter: blur(10px);
+            opacity: 0; transition: all 0.35s; z-index: 2000; pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── Logo ── */
+        .login-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 6px; animation: logoFloat 4s ease-in-out infinite; filter: drop-shadow(0 4px 14px rgba(52,142,56,0.5)); }
+        @keyframes logoFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        .login-brand { color: #7ee88a; font-weight: 900; font-size: 0.95rem; margin-bottom: 4px; }
+
+        /* ── Card ── */
+        .login-card {
+            position: relative; z-index: 1; width: 100%; max-width: 480px;
+            background: rgba(255,255,255,0.055); backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(52,142,56,0.28);
+            border-radius: 28px; padding: 36px 32px 30px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07);
+            text-align: center;
+        }
+        .login-card::before {
+            content: ''; position: absolute; top: 0; left: 12%; right: 12%;
+            height: 2px; background: linear-gradient(to right, transparent, rgba(126,232,138,0.55), transparent); border-radius: 2px;
+        }
+        .login-title { color: #fff; font-weight: 900; font-size: 1.3rem; margin-bottom: 4px; }
+        .login-subtitle { color: rgba(255,255,255,0.5); font-size: 0.82rem; margin-bottom: 22px; }
+
+        /* ── Fields ── */
+        .field-wrap { position: relative; margin-bottom: 14px; text-align: start; }
+        .field-label { display: block; color: rgba(255,255,255,0.75); font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; }
+        .field-input-wrap { position: relative; }
+        .field-icon {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            inset-inline-start: 14px; color: rgba(255,255,255,0.35); font-size: 0.85rem;
+            pointer-events: none; transition: color 0.2s;
+        }
+        .field-input-wrap:focus-within .field-icon { color: #7ee88a; }
+        .login-input {
+            width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px; color: #fff; font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem; padding: 11px 42px; outline: none;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+        }
+        .login-input::placeholder { color: rgba(255,255,255,0.28); }
+        .login-input:focus { border-color: rgba(126,232,138,0.5); background: rgba(255,255,255,0.1); box-shadow: 0 0 0 3px rgba(126,232,138,0.08); }
+        .login-input.input-error { border-color: rgba(244,67,54,0.55); }
+        .field-error { color: #ef9a9a; font-size: 0.73rem; margin-top: 4px; display: none; }
+        .field-error.show { display: block; }
+
+        /* ── Password toggle ── */
+        .pw-toggle {
+            position: absolute; top: 50%; transform: translateY(-50%); inset-inline-end: 14px;
+            background: none; border: none; color: rgba(255,255,255,0.35);
+            font-size: 0.85rem; cursor: pointer; padding: 0; transition: color 0.2s;
+        }
+        .pw-toggle:hover { color: #7ee88a; }
+
+        /* ── Password strength ── */
+        .pw-strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+        .pw-seg { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); transition: background 0.3s; }
+        .pw-seg.weak   { background: #f44336; }
+        .pw-seg.medium { background: #ff9800; }
+        .pw-seg.strong { background: #4caf50; }
+        .pw-strength-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 3px; text-align: start; }
+
+        /* ═══════════════════════════════════
+           ACCOUNT TYPE TOGGLE
+        ═══════════════════════════════════ */
+        .type-section {
+            margin: 20px 0 6px;
+            text-align: start;
+        }
+        .type-section-label {
+            color: rgba(255,255,255,0.75); font-size: 0.8rem; font-weight: 700; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .type-section-label i { color: #7ee88a; }
+        .type-toggle {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .type-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 6px; padding: 14px 12px; border-radius: 18px; cursor: pointer;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.55);
+            font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 0.85rem;
+            transition: all 0.28s; user-select: none; position: relative; overflow: hidden;
+        }
+        .type-btn i { font-size: 1.4rem; transition: transform 0.28s; }
+        .type-btn .type-badge {
+            font-size: 0.68rem; font-weight: 700; opacity: 0.6;
+            background: rgba(255,255,255,0.08); border-radius: 20px;
+            padding: 2px 8px; letter-spacing: 0.02em;
+        }
+        .type-btn:hover {
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.22);
+            color: #fff;
+        }
+        /* Regular selected */
+        .type-btn.regular-btn.selected {
+            background: rgba(52,142,56,0.2);
+            border-color: rgba(126,232,138,0.6);
+            color: #7ee88a;
+            box-shadow: 0 0 18px rgba(52,142,56,0.2), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+        .type-btn.regular-btn.selected i { transform: scale(1.15); color: #7ee88a; }
+        /* VIP selected */
+        .type-btn.vip-btn.selected {
+            background: linear-gradient(135deg, rgba(255,214,0,0.14), rgba(255,160,0,0.1));
+            border-color: rgba(255,214,0,0.55);
+            color: #ffd600;
+            box-shadow: 0 0 22px rgba(255,200,0,0.18), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+        .type-btn.vip-btn.selected i { transform: scale(1.15); color: #ffd600; }
+        .type-btn.vip-btn.selected .type-badge { background: rgba(255,214,0,0.15); color: #ffd600; opacity: 1; }
+        /* Check mark */
+        .type-btn .check-mark {
+            position: absolute; top: 8px; inset-inline-end: 8px;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #7ee88a; display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; color: #0a2c1c; opacity: 0; transition: opacity 0.22s;
+        }
+        .type-btn.regular-btn.selected .check-mark { opacity: 1; }
+        .type-btn.vip-btn.selected .check-mark { opacity: 1; background: #ffd600; color: #0a2c1c; }
+
+        /* ═══════════════════════════════════
+           VIP PRICING CARDS
+        ═══════════════════════════════════ */
+        .vip-plans-wrap {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s;
+            opacity: 0;
+        }
+        .vip-plans-wrap.open { max-height: 900px; opacity: 1; }
+
+        .vip-plans-inner { padding-top: 18px; }
+        .vip-plans-title {
+            color: rgba(255,255,255,0.7); font-size: 0.78rem; font-weight: 700;
+            text-align: center; margin-bottom: 12px; letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .vip-plans-title span { color: #ffd600; }
+
+        .plan-cards { display: flex; flex-direction: column; gap: 10px; }
+
+        .plan-card {
+            position: relative; border-radius: 18px; padding: 16px 18px;
+            border: 1.5px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.04);
+            cursor: pointer; transition: all 0.28s;
+            display: flex; align-items: center; gap: 14px;
+            text-align: start;
+        }
+        .plan-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,214,0,0.3);
+            transform: translateY(-1px);
+        }
+        .plan-card.selected {
+            background: linear-gradient(135deg, rgba(255,214,0,0.12), rgba(255,160,0,0.07));
+            border-color: rgba(255,214,0,0.6);
+            box-shadow: 0 6px 24px rgba(255,200,0,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        /* Popular / Best value badges */
+        .plan-ribbon {
+            position: absolute; top: -1px; inset-inline-end: 14px;
+            background: linear-gradient(135deg, #348E38, #2d7a31);
+            color: #fff; font-size: 0.63rem; font-weight: 900;
+            padding: 3px 10px; border-radius: 0 0 10px 10px;
+            letter-spacing: 0.03em; white-space: nowrap;
+        }
+        .plan-ribbon.gold { background: linear-gradient(135deg, #c49000, #e8b800); color: #0a2c1c; }
+
+        .plan-radio {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.25);
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.22s;
+        }
+        .plan-card.selected .plan-radio {
+            border-color: #ffd600;
+            background: rgba(255,214,0,0.15);
+        }
+        .plan-radio-dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: #ffd600; opacity: 0; transform: scale(0);
+            transition: opacity 0.22s, transform 0.22s;
+        }
+        .plan-card.selected .plan-radio-dot { opacity: 1; transform: scale(1); }
+
+        .plan-icon {
+            font-size: 1.6rem; flex-shrink: 0;
+            filter: drop-shadow(0 2px 8px rgba(255,200,0,0.25));
+        }
+
+        .plan-body { flex: 1; min-width: 0; }
+        .plan-name {
+            font-weight: 900; font-size: 0.95rem; color: #fff;
+            display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+        }
+        .plan-desc { color: rgba(255,255,255,0.45); font-size: 0.74rem; margin-top: 2px; line-height: 1.5; }
+
+        .plan-price-wrap { text-align: center; flex-shrink: 0; min-width: 64px; }
+        .plan-price {
+            font-weight: 900; font-size: 1.35rem; color: #ffd600;
+            line-height: 1; letter-spacing: -0.02em;
+        }
+        .plan-currency { font-size: 0.72rem; font-weight: 700; color: rgba(255,214,0,0.7); }
+        .plan-period { font-size: 0.68rem; color: rgba(255,255,255,0.4); margin-top: 1px; }
+        .plan-savings {
+            display: inline-block; margin-top: 4px;
+            background: rgba(52,142,56,0.25); border: 1px solid rgba(126,232,138,0.3);
+            color: #7ee88a; font-size: 0.62rem; font-weight: 700;
+            padding: 1px 7px; border-radius: 20px;
+        }
+
+        /* ── Terms ── */
+        .terms-wrap {
+            display: flex; align-items: flex-start; gap: 10px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; text-align: start;
+            cursor: pointer;
+        }
+        .terms-check { width: 18px; height: 18px; accent-color: #348E38; flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+        .terms-text { color: rgba(255,255,255,0.6); font-size: 0.8rem; line-height: 1.6; }
+        .terms-text a { color: #7ee88a; text-decoration: none; }
+        .terms-text a:hover { text-decoration: underline; }
+
+        /* ── Submit btn ── */
+        .login-btn {
+            width: 100%; background: linear-gradient(135deg, #348E38, #2d7a31); border: none;
+            border-radius: 50px; color: #fff; font-family: 'Cairo', sans-serif;
+            font-weight: 900; font-size: 1rem; padding: 13px 24px; cursor: pointer;
+            box-shadow: 0 6px 22px rgba(52,142,56,0.4); transition: transform 0.22s, box-shadow 0.22s, opacity 0.22s;
+            display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 18px;
+        }
+        .login-btn.vip-pay-btn {
+            background: linear-gradient(135deg, #c49000, #e8b800);
+            box-shadow: 0 6px 22px rgba(200,160,0,0.4);
+            color: #0a2c1c;
+        }
+        .login-btn.vip-pay-btn:hover { box-shadow: 0 12px 30px rgba(200,160,0,0.55); }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(52,142,56,0.55); }
+        .login-btn.loading { opacity: 0.7; pointer-events: none; }
+        .btn-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .login-btn.loading .btn-spinner { display: inline-block; }
+        .login-btn.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Divider ── */
+        .or-divider { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+        .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+
+        /* ── Social grid ── */
+        .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .social-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border-radius: 14px; padding: 10px 14px; font-family: 'Cairo', sans-serif;
+            font-weight: 700; font-size: 0.82rem; cursor: pointer;
+            border: 1px solid; transition: transform 0.2s, opacity 0.2s; white-space: nowrap;
+        }
+        .social-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .social-btn i { font-size: 1rem; }
+        .google-btn { background: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.5); color: #333; }
+        .apple-btn  { background: rgba(10,10,10,0.85); border-color: rgba(255,255,255,0.15); color: #fff; }
+        .x-btn      { background: rgba(0,0,0,0.75); border-color: rgba(255,255,255,0.15); color: #fff; }
+        .fb-btn     { background: rgba(24,119,242,0.2); border-color: rgba(24,119,242,0.4); color: #5b9bef; }
+
+        /* ── Telegram btn ── */
+        .tg-login-btn {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
+            background: rgba(41,182,246,0.1); border: 1px solid rgba(41,182,246,0.3);
+            border-radius: 50px; color: #29b6f6 !important; font-family: 'Cairo', sans-serif;
+            font-weight: 700; font-size: 0.9rem; padding: 11px 24px; text-decoration: none;
+            transition: background 0.25s, transform 0.22s; margin-bottom: 20px;
+        }
+        .tg-login-btn:hover { background: rgba(41,182,246,0.18); transform: translateY(-2px); }
+
+        /* ── Bottom link ── */
+        .bottom-link { color: rgba(255,255,255,0.4); font-size: 0.78rem; margin: 0; }
+        .bottom-link a { color: rgba(126,232,138,0.7); text-decoration: none; }
+        .bottom-link a:hover { color: #7ee88a; }
+
+        /* ═══════════════════════════════════
+           PAYMENT STEP
+        ═══════════════════════════════════ */
+        .pay-step { display: none; animation: fadeSlide 0.4s ease; }
+        @keyframes fadeSlide { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+        .pay-summary {
+            background: linear-gradient(135deg, rgba(255,214,0,0.1), rgba(255,160,0,0.07));
+            border: 1px solid rgba(255,214,0,0.35); border-radius: 16px;
+            padding: 14px 18px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px; text-align: start;
+        }
+        .pay-summary i { font-size: 1.8rem; color: #ffd600; flex-shrink: 0; }
+        .pay-summary-body {}
+        .pay-summary-name { font-weight: 900; color: #fff; font-size: 0.95rem; }
+        .pay-summary-amount { font-size: 0.82rem; color: rgba(255,214,0,0.85); font-weight: 700; }
+
+        .pay-field-wrap { position: relative; margin-bottom: 14px; text-align: start; }
+        .pay-field-label { display: block; color: rgba(255,255,255,0.7); font-size: 0.78rem; font-weight: 700; margin-bottom: 6px; }
+        .pay-input {
+            width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px; color: #fff; font-family: 'Cairo', sans-serif; font-size: 0.9rem;
+            padding: 11px 16px; outline: none; letter-spacing: 0.05em;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .pay-input::placeholder { color: rgba(255,255,255,0.28); letter-spacing: 0; }
+        .pay-input:focus { border-color: rgba(255,214,0,0.5); box-shadow: 0 0 0 3px rgba(255,214,0,0.08); }
+        .pay-input.input-error { border-color: rgba(244,67,54,0.55); }
+
+        .pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .pay-secure-note {
+            display: flex; align-items: center; gap: 7px; margin-bottom: 16px;
+            color: rgba(255,255,255,0.35); font-size: 0.73rem;
+        }
+        .pay-secure-note i { color: rgba(126,232,138,0.5); }
+
+        .back-step-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 0.8rem;
+            cursor: pointer; padding: 0; margin-bottom: 16px; transition: color 0.2s;
+        }
+        .back-step-btn:hover { color: rgba(255,255,255,0.75); }
+
+        /* ── Success states ── */
+        .login-success { display: none; padding: 10px 0 4px; animation: fadeSlide 0.4s ease; }
+        .login-success .success-icon {
+            font-size: 3.2rem; margin-bottom: 14px; display: block;
+            animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .login-success .success-icon.green { color: #7ee88a; }
+        .login-success .success-icon.gold  { color: #ffd600; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .login-success h4 { color: #fff; font-weight: 900; font-size: 1.1rem; margin-bottom: 6px; }
+        .login-success p  { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+        .vip-success-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, rgba(255,214,0,0.15), rgba(255,160,0,0.1));
+            border: 1px solid rgba(255,214,0,0.4); border-radius: 30px;
+            padding: 5px 16px; color: #ffd600; font-weight: 700; font-size: 0.82rem;
+            margin-top: 10px;
+        }
+
+        /* ── Footer ── */
+        .login-footer-note { position: relative; z-index: 1; margin-top: 18px; color: rgba(255,255,255,0.3); font-size: 0.73rem; text-align: center; }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 28px 18px 24px; }
+            .pay-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="page-bolts"></div>
+    <div class="toast-msg" id="toast"></div>
+
+    <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLang()" aria-label="Toggle language">
+        <span data-i18n="toggle_label">EN</span>
+        <i class="fa-solid fa-globe"></i>
+    </button>
+
+    <a href="auth-login.html" class="back-home-btn">
+        <i class="fa-solid fa-chevron-right back-arrow"></i>
+        <span data-i18n="login_title">تسجيل الدخول</span>
+    </a>
+
+    <div class="login-card">
+        <a href="index.html"><img src="img/logo1.png" class="login-logo" alt="اِنطلاقة" style="cursor:pointer;"></a>
+        <div class="login-brand">⚡ اِنطلاقة · HPC</div>
+
+        <!-- ══════════════ STEP 1 — REGISTRATION FORM ══════════════ -->
+        <div id="reg-form-section">
+            <h1 class="login-title" data-i18n="reg_title">إنشاء حساب جديد</h1>
+            <p class="login-subtitle" data-i18n="reg_subtitle">انضم إلى مجتمع اِنطلاقة وابدأ رحلتك</p>
+
+            <!-- Full name -->
+            <div class="field-wrap">
+                <label class="field-label" data-i18n="reg_name_label">الاسم الكامل</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input type="text" id="reg-name" class="login-input" data-i18n-placeholder="reg_name_ph" placeholder="الاسم الكامل">
+                </div>
+                <span class="field-error" id="name-error" data-i18n="login_user_error">هذا الحقل مطلوب</span>
+            </div>
+
+            <!-- Email -->
+            <div class="field-wrap">
+                <label class="field-label" data-i18n="reg_email_label">البريد الإلكتروني</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-envelope field-icon"></i>
+                    <input type="email" id="reg-email" class="login-input" data-i18n-placeholder="reg_email_ph" placeholder="example@email.com">
+                </div>
+                <span class="field-error" id="email-error" data-i18n="reg_email_error">أدخل بريداً إلكترونياً صحيحاً</span>
+            </div>
+
+            <!-- Phone (optional) -->
+            <div class="field-wrap">
+                <label class="field-label">
+                    <span data-i18n="reg_phone_label">رقم الجوال</span>
+                    <span style="color:rgba(255,255,255,0.3);font-size:0.75em;font-weight:400;margin-inline-start:4px;" data-i18n="optional">(اختياري)</span>
+                </label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-mobile-screen field-icon"></i>
+                    <input type="tel" id="reg-phone" class="login-input" data-i18n-placeholder="reg_phone_ph" placeholder="+966 5X XXX XXXX">
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="field-wrap">
+                <label class="field-label" data-i18n="login_pass_label">كلمة المرور</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="reg-pass" class="login-input" data-i18n-placeholder="reg_pass_ph" placeholder="٨ أحرف على الأقل" oninput="checkStrength(this.value)">
+                    <button class="pw-toggle" type="button" onclick="togglePw('reg-pass', this)"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <div class="pw-strength-bar">
+                    <div class="pw-seg" id="seg1"></div>
+                    <div class="pw-seg" id="seg2"></div>
+                    <div class="pw-seg" id="seg3"></div>
+                </div>
+                <div class="pw-strength-label" id="pw-label"></div>
+                <span class="field-error" id="pass-error" data-i18n="login_pass_error">هذا الحقل مطلوب</span>
+            </div>
+
+            <!-- Confirm password -->
+            <div class="field-wrap">
+                <label class="field-label" data-i18n="reg_confirm_label">تأكيد كلمة المرور</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-lock-open field-icon"></i>
+                    <input type="password" id="reg-confirm" class="login-input" data-i18n-placeholder="reg_confirm_ph" placeholder="أعد إدخال كلمة المرور">
+                    <button class="pw-toggle" type="button" onclick="togglePw('reg-confirm', this)"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <span class="field-error" id="confirm-error" data-i18n="reg_confirm_error">كلمتا المرور غير متطابقتين</span>
+            </div>
+
+            <!-- ───── Account Type Toggle ───── -->
+            <div class="type-section">
+                <div class="type-section-label">
+                    <i class="fa-solid fa-id-badge"></i>
+                    <span data-i18n="reg_type_label">نوع الحساب</span>
+                </div>
+                <div class="type-toggle">
+                    <!-- Regular -->
+                    <div class="type-btn regular-btn selected" id="btn-regular" onclick="selectType('regular')">
+                        <div class="check-mark"><i class="fa-solid fa-check"></i></div>
+                        <i class="fa-solid fa-user"></i>
+                        <span data-i18n="reg_type_regular">مستخدم عادي</span>
+                        <span class="type-badge" data-i18n="reg_type_free">مجاني</span>
+                    </div>
+                    <!-- VIP -->
+                    <div class="type-btn vip-btn" id="btn-vip" onclick="selectType('vip')">
+                        <div class="check-mark"><i class="fa-solid fa-check"></i></div>
+                        <i class="fa-solid fa-crown"></i>
+                        <span data-i18n="reg_type_vip">مستخدم VIP</span>
+                        <span class="type-badge">Premium</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ───── VIP Pricing Plans ───── -->
+            <div class="vip-plans-wrap" id="vip-plans-wrap">
+                <div class="vip-plans-inner">
+                    <div class="vip-plans-title">
+                        <i class="fa-solid fa-crown" style="color:#ffd600;margin-inline-end:6px;"></i>
+                        <span data-i18n="reg_vip_choose">اختر خطتك</span>
+                        <span style="color:rgba(255,255,255,0.3);"> — </span>
+                        <span data-i18n="reg_vip_choose_sub">كل الخطط تشمل وصولاً كاملاً</span>
+                    </div>
+                    <div class="plan-cards">
+
+                        <!-- Basic -->
+                        <div class="plan-card" id="plan-basic" onclick="selectPlan('basic')" data-plan="basic" data-price-ar="19 ريال / شهرياً" data-price-en="19 SAR / month">
+                            <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+                            <div class="plan-icon">⚡</div>
+                            <div class="plan-body">
+                                <div class="plan-name" data-i18n="reg_vip_basic_name">VIP Basic</div>
+                                <div class="plan-desc" data-i18n="reg_vip_basic_desc">وصول كامل للميزات الأساسية ولوحة المتصدرين</div>
+                            </div>
+                            <div class="plan-price-wrap">
+                                <div class="plan-price">19</div>
+                                <div class="plan-currency" data-i18n="reg_currency">ريال</div>
+                                <div class="plan-period" data-i18n="reg_per_month">/ شهر</div>
+                            </div>
+                        </div>
+
+                        <!-- Plus -->
+                        <div class="plan-card" id="plan-plus" onclick="selectPlan('plus')" data-plan="plus" data-price-ar="39 ريال / شهرياً" data-price-en="39 SAR / month">
+                            <div class="plan-ribbon" data-i18n="reg_vip_popular">الأكثر طلباً</div>
+                            <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+                            <div class="plan-icon">🌟</div>
+                            <div class="plan-body">
+                                <div class="plan-name" data-i18n="reg_vip_plus_name">VIP Plus</div>
+                                <div class="plan-desc" data-i18n="reg_vip_plus_desc">ميزات متقدمة + أولوية الدعم + شارة حصرية</div>
+                            </div>
+                            <div class="plan-price-wrap">
+                                <div class="plan-price">39</div>
+                                <div class="plan-currency" data-i18n="reg_currency">ريال</div>
+                                <div class="plan-period" data-i18n="reg_per_month">/ شهر</div>
+                            </div>
+                        </div>
+
+                        <!-- Annual -->
+                        <div class="plan-card" id="plan-annual" onclick="selectPlan('annual')" data-plan="annual" data-price-ar="199 ريال / سنوياً" data-price-en="199 SAR / year">
+                            <div class="plan-ribbon gold" data-i18n="reg_vip_best">أفضل قيمة</div>
+                            <div class="plan-radio"><div class="plan-radio-dot"></div></div>
+                            <div class="plan-icon">👑</div>
+                            <div class="plan-body">
+                                <div class="plan-name">
+                                    <span data-i18n="reg_vip_annual_name">VIP Annual</span>
+                                </div>
+                                <div class="plan-desc" data-i18n="reg_vip_annual_desc">كل مميزات Plus + وفّر 30% بدفع سنوي واحد</div>
+                                <div class="plan-savings" data-i18n="reg_vip_save">وفّر 30%</div>
+                            </div>
+                            <div class="plan-price-wrap">
+                                <div class="plan-price">199</div>
+                                <div class="plan-currency" data-i18n="reg_currency">ريال</div>
+                                <div class="plan-period" data-i18n="reg_per_year">/ سنة</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <span class="field-error" id="plan-error" style="margin-top:8px;display:none;" data-i18n="reg_plan_error">يرجى اختيار خطة اشتراك</span>
+                </div>
+            </div>
+
+            <!-- Terms -->
+            <div style="margin-top:18px;">
+                <label class="terms-wrap" for="terms-check">
+                    <input type="checkbox" id="terms-check" class="terms-check">
+                    <span class="terms-text">
+                        <span data-i18n="reg_terms_pre">أوافق على </span>
+                        <a href="#" data-i18n="reg_terms_link">الشروط والأحكام</a>
+                        <span data-i18n="reg_terms_and"> و</span>
+                        <a href="#" data-i18n="reg_privacy_link">سياسة الخصوصية</a>
+                    </span>
+                </label>
+                <span class="field-error" id="terms-error" style="margin-top:-10px;margin-bottom:12px;" data-i18n="reg_terms_error">يجب الموافقة على الشروط</span>
+            </div>
+
+            <!-- Submit -->
+            <button class="login-btn" id="reg-btn" type="button">
+                <span class="btn-spinner"></span>
+                <span class="btn-text" id="reg-btn-text">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span data-i18n="reg_btn">إنشاء حساب</span>
+                </span>
+            </button>
+
+            <!-- Divider -->
+            <div class="or-divider"><span data-i18n="login_or">أو</span></div>
+
+            <!-- Social -->
+            <div class="social-grid" style="margin-bottom:12px;">
+                <button class="social-btn google-btn" onclick="socialToast()"><i class="fa-brands fa-google"></i> Google</button>
+                <button class="social-btn apple-btn"  onclick="socialToast()"><i class="fa-brands fa-apple"></i> Apple</button>
+                <button class="social-btn x-btn"      onclick="socialToast()"><i class="fa-brands fa-x-twitter"></i> X</button>
+                <button class="social-btn fb-btn"     onclick="socialToast()"><i class="fa-brands fa-facebook"></i> Facebook</button>
+            </div>
+
+            <!-- Telegram -->
+            <a href="https://t.me/HPC_earning" target="_blank" rel="noopener" class="tg-login-btn">
+                <i class="fa-brands fa-telegram" style="font-size:1.1em;"></i>
+                <span data-i18n="login_tg">انضم إلى مجتمع تليجرام</span>
+            </a>
+
+            <p class="bottom-link">
+                <span data-i18n="reg_have_account">لديك حساب؟ </span>
+                <a href="auth-login.html" data-i18n="login_title">تسجيل الدخول</a>
+            </p>
+        </div>
+
+        <!-- ══════════════ STEP 2 — PAYMENT ══════════════ -->
+        <div id="pay-step" class="pay-step">
+            <button class="back-step-btn" onclick="goBackToForm()">
+                <i class="fa-solid fa-chevron-right back-arrow"></i>
+                <span data-i18n="reg_back">رجوع</span>
+            </button>
+
+            <h2 class="login-title" data-i18n="reg_payment_title">إتمام الاشتراك</h2>
+            <p class="login-subtitle" data-i18n="reg_payment_subtitle">أدخل بيانات بطاقتك لتفعيل عضوية VIP</p>
+
+            <!-- Summary -->
+            <div class="pay-summary" id="pay-summary">
+                <i class="fa-solid fa-crown"></i>
+                <div class="pay-summary-body">
+                    <div class="pay-summary-name" id="pay-plan-name">VIP Plus</div>
+                    <div class="pay-summary-amount" id="pay-plan-amount">39 ريال / شهرياً</div>
+                </div>
+            </div>
+
+            <!-- Card number -->
+            <div class="pay-field-wrap">
+                <label class="pay-field-label" data-i18n="reg_card_number">رقم البطاقة</label>
+                <input type="text" id="pay-card" class="pay-input" placeholder="•••• •••• •••• ••••" maxlength="19" inputmode="numeric">
+                <span class="field-error" id="card-error" data-i18n="reg_card_error">أدخل رقم بطاقة صحيح</span>
+            </div>
+
+            <!-- Expiry + CVV -->
+            <div class="pay-row">
+                <div class="pay-field-wrap" style="margin-bottom:0;">
+                    <label class="pay-field-label" data-i18n="reg_card_expiry">تاريخ الانتهاء</label>
+                    <input type="text" id="pay-expiry" class="pay-input" placeholder="MM / YY" maxlength="7" inputmode="numeric">
+                    <span class="field-error" id="expiry-error" data-i18n="reg_expiry_error">تاريخ غير صحيح</span>
+                </div>
+                <div class="pay-field-wrap" style="margin-bottom:0;">
+                    <label class="pay-field-label" data-i18n="reg_card_cvv">رمز الأمان (CVV)</label>
+                    <input type="text" id="pay-cvv" class="pay-input" placeholder="•••" maxlength="4" inputmode="numeric">
+                    <span class="field-error" id="cvv-error" data-i18n="reg_cvv_error">أدخل رمز CVV</span>
+                </div>
+            </div>
+
+            <!-- Cardholder name -->
+            <div class="pay-field-wrap" style="margin-top:14px;">
+                <label class="pay-field-label" data-i18n="reg_card_name">اسم حامل البطاقة</label>
+                <input type="text" id="pay-name" class="pay-input" data-i18n-placeholder="reg_name_ph" placeholder="الاسم كما هو على البطاقة">
+                <span class="field-error" id="pay-name-error" data-i18n="login_user_error">هذا الحقل مطلوب</span>
+            </div>
+
+            <!-- Secure note -->
+            <div class="pay-secure-note">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span data-i18n="reg_secure_note">مدفوعاتك آمنة ومشفّرة بالكامل</span>
+            </div>
+
+            <!-- Pay btn -->
+            <button class="login-btn vip-pay-btn" id="pay-btn" type="button">
+                <span class="btn-spinner" style="border-top-color:#0a2c1c;"></span>
+                <span class="btn-text" id="pay-btn-text">
+                    <i class="fa-solid fa-lock"></i>
+                    <span data-i18n="reg_pay_btn">ادفع الآن</span>
+                    <span id="pay-btn-amount" style="opacity:0.8;font-weight:700;"></span>
+                </span>
+            </button>
+        </div>
+
+        <!-- ══════════════ SUCCESS ══════════════ -->
+        <div class="login-success" id="reg-success">
+            <i class="fa-solid fa-circle-check success-icon green"></i>
+            <h4 data-i18n="reg_success_title">تم إنشاء حسابك! 🎉</h4>
+            <p data-i18n="reg_success_body">مرحباً بك في مجتمع اِنطلاقة. جارٍ التوجيه...</p>
+        </div>
+
+        <div class="login-success" id="vip-success">
+            <i class="fa-solid fa-crown success-icon gold"></i>
+            <h4 data-i18n="reg_vip_success_title">تم تفعيل عضوية VIP! 🌟</h4>
+            <p data-i18n="reg_vip_success_body">مرحباً بك في مجتمع VIP اِنطلاقة. جارٍ التوجيه...</p>
+            <div class="vip-success-badge">
+                <i class="fa-solid fa-crown"></i>
+                <span id="vip-success-plan">VIP Plus</span>
+            </div>
+        </div>
+    </div>
+
+    <p class="login-footer-note" data-i18n="footer_rights">⚡ جميع الحقوق محفوظة لفريق اِنطلاقة-HPC</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    /* ── Bolts ── */
+    (function(){
+        var bg = document.getElementById('page-bolts');
+        [{bs:'2.6rem',bx:'5%',bd:'9s',bdelay:'-2s',br:'-12deg',bo:0.07},{bs:'1.4rem',bx:'17%',bd:'13s',bdelay:'-7s',br:'8deg',bo:0.06},{bs:'3.8rem',bx:'30%',bd:'8s',bdelay:'-3s',br:'-20deg',bo:0.07},{bs:'1.8rem',bx:'50%',bd:'11s',bdelay:'-5s',br:'14deg',bo:0.06},{bs:'3.0rem',bx:'65%',bd:'7.5s',bdelay:'-1s',br:'-6deg',bo:0.07},{bs:'1.2rem',bx:'80%',bd:'14s',bdelay:'-9s',br:'22deg',bo:0.05},{bs:'4.2rem',bx:'90%',bd:'10s',bdelay:'-4s',br:'-26deg',bo:0.07}]
+        .forEach(function(c){var el=document.createElement('i');el.className='fa-solid fa-bolt page-bolt';el.style.cssText='--bx:'+c.bx+';--bs:'+c.bs+';--bd:'+c.bd+';--bdelay:'+c.bdelay+';--br:'+c.br+';--bo:'+c.bo+';';bg.appendChild(el);});
+    })();
+
+    /* ── Password ── */
+    function togglePw(id, btn) {
+        var inp = document.getElementById(id), ico = btn.querySelector('i');
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        ico.className = inp.type === 'password' ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+    }
+    function checkStrength(v) {
+        ['seg1','seg2','seg3'].forEach(function(s){ document.getElementById(s).className='pw-seg'; });
+        var lbl = document.getElementById('pw-label');
+        if (!v) { lbl.textContent=''; return; }
+        var score = 0;
+        if (v.length >= 8) score++;
+        if (/[A-Z]/.test(v) || /[٠-٩]/.test(v)) score++;
+        if (/[^a-zA-Z0-9]/.test(v) || /[0-9]/.test(v)) score++;
+        var levels = ['weak','medium','strong'];
+        var labels = { ar:['ضعيفة','متوسطة','قوية'], en:['Weak','Medium','Strong'] };
+        var lang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+        for (var i=0;i<score;i++) document.getElementById('seg'+(i+1)).classList.add(levels[score-1]);
+        lbl.textContent = labels[lang][score-1] || '';
+    }
+
+    /* ── Toast ── */
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(function(){ t.classList.remove('show'); }, 2800);
+    }
+    function socialToast() {
+        showToast(document.documentElement.lang === 'en' ? 'Coming soon! 🚀' : 'قريباً — هذه الميزة تحت التطوير 🚀');
+    }
+
+    /* ── Account type selection ── */
+    var currentType = 'regular';
+    function selectType(type) {
+        currentType = type;
+        document.getElementById('btn-regular').classList.toggle('selected', type === 'regular');
+        document.getElementById('btn-vip').classList.toggle('selected', type === 'vip');
+        var wrap = document.getElementById('vip-plans-wrap');
+        wrap.classList.toggle('open', type === 'vip');
+        /* Update submit button style */
+        var btn = document.getElementById('reg-btn');
+        if (type === 'vip') {
+            btn.style.background = 'linear-gradient(135deg,#c49000,#e8b800)';
+            btn.style.color = '#0a2c1c';
+            btn.style.boxShadow = '0 6px 22px rgba(200,160,0,0.4)';
+        } else {
+            btn.style.background = '';
+            btn.style.color = '';
+            btn.style.boxShadow = '';
+        }
+        updateRegBtnLabel();
+    }
+
+    /* ── Plan selection ── */
+    var currentPlan = null;
+    function selectPlan(plan) {
+        currentPlan = plan;
+        ['basic','plus','annual'].forEach(function(p){
+            document.getElementById('plan-'+p).classList.toggle('selected', p === plan);
+        });
+        document.getElementById('plan-error').style.display = 'none';
+        updateRegBtnLabel();
+    }
+
+    function updateRegBtnLabel() {
+        /* The i18n keys will handle text; just ensure button icon matches */
+        var ico = document.querySelector('#reg-btn-text i');
+        if (currentType === 'vip') {
+            ico.className = 'fa-solid fa-crown';
+        } else {
+            ico.className = 'fa-solid fa-user-plus';
+        }
+    }
+
+    /* ── Validation helpers ── */
+    function setErr(id, show, inputId) {
+        var el = document.getElementById(id);
+        el.style.display = show ? 'block' : 'none';
+        if (inputId) {
+            var inp = document.getElementById(inputId);
+            if (inp) inp.classList.toggle('input-error', show);
+        }
+        return !show;
+    }
+
+    /* ── Step 1 Submit ── */
+    document.getElementById('reg-btn').addEventListener('click', function() {
+        var name    = document.getElementById('reg-name');
+        var email   = document.getElementById('reg-email');
+        var pass    = document.getElementById('reg-pass');
+        var confirm = document.getElementById('reg-confirm');
+        var terms   = document.getElementById('terms-check');
+
+        var ok = true;
+        if (!name.value.trim())                  { setErr('name-error', true, 'reg-name');    ok=false; } else setErr('name-error', false, 'reg-name');
+        if (!email.value.includes('@'))           { setErr('email-error', true, 'reg-email');  ok=false; } else setErr('email-error', false, 'reg-email');
+        if (pass.value.length < 6)               { setErr('pass-error', true, 'reg-pass');    ok=false; } else setErr('pass-error', false, 'reg-pass');
+        if (pass.value !== confirm.value)        { setErr('confirm-error', true, 'reg-confirm'); ok=false; } else setErr('confirm-error', false, 'reg-confirm');
+        if (!terms.checked)                      { setErr('terms-error', true, null);          ok=false; } else setErr('terms-error', false, null);
+
+        if (currentType === 'vip' && !currentPlan) {
+            document.getElementById('plan-error').style.display = 'block';
+            ok = false;
+        }
+
+        if (!ok) return;
+
+        if (currentType === 'regular') {
+            /* Regular → direct success */
+            var btn = this; btn.classList.add('loading');
+            setTimeout(function(){
+                btn.classList.remove('loading');
+                document.getElementById('reg-form-section').style.display = 'none';
+                document.getElementById('reg-success').style.display = 'block';
+                setTimeout(function(){ window.location.href = 'user-dashboard.html'; }, 2400);
+            }, 1600);
+        } else {
+            /* VIP → go to payment step */
+            goToPayment();
+        }
+    });
+
+    /* ── Navigate to payment step ── */
+    function goToPayment() {
+        var planCard = document.getElementById('plan-' + currentPlan);
+        var lang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+        var planNames = { basic: 'VIP Basic', plus: 'VIP Plus', annual: 'VIP Annual' };
+        var planAmounts = {
+            basic:  { ar: '19 ريال / شهرياً',  en: '19 SAR / month' },
+            plus:   { ar: '39 ريال / شهرياً',  en: '39 SAR / month' },
+            annual: { ar: '199 ريال / سنوياً', en: '199 SAR / year'  }
+        };
+        var btnAmounts = { basic: '19', plus: '39', annual: '199' };
+        var currencies = { ar: 'ريال', en: 'SAR' };
+
+        document.getElementById('pay-plan-name').textContent   = planNames[currentPlan];
+        document.getElementById('pay-plan-amount').textContent = planAmounts[currentPlan][lang];
+        document.getElementById('pay-btn-amount').textContent  = '— ' + btnAmounts[currentPlan] + ' ' + currencies[lang];
+        document.getElementById('vip-success-plan').textContent = planNames[currentPlan];
+
+        document.getElementById('reg-form-section').style.display = 'none';
+        document.getElementById('pay-step').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ── Back to form ── */
+    function goBackToForm() {
+        document.getElementById('pay-step').style.display = 'none';
+        document.getElementById('reg-form-section').style.display = 'block';
+    }
+
+    /* ── Card number formatting ── */
+    document.getElementById('pay-card').addEventListener('input', function() {
+        var v = this.value.replace(/\D/g,'').slice(0,16);
+        this.value = v.replace(/(.{4})/g,'$1 ').trim();
+    });
+    document.getElementById('pay-expiry').addEventListener('input', function() {
+        var v = this.value.replace(/\D/g,'').slice(0,4);
+        if (v.length > 2) v = v.slice(0,2) + ' / ' + v.slice(2);
+        this.value = v;
+    });
+    document.getElementById('pay-cvv').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g,'').slice(0,4);
+    });
+
+    /* ── Payment submit ── */
+    document.getElementById('pay-btn').addEventListener('click', function() {
+        var card   = document.getElementById('pay-card');
+        var expiry = document.getElementById('pay-expiry');
+        var cvv    = document.getElementById('pay-cvv');
+        var pname  = document.getElementById('pay-name');
+        var ok = true;
+
+        var rawCard = card.value.replace(/\s/g,'');
+        if (rawCard.length < 16) { setErr('card-error', true, 'pay-card');     ok=false; } else setErr('card-error', false, 'pay-card');
+        if (expiry.value.replace(/\s/g,'').length < 5) { setErr('expiry-error', true, 'pay-expiry'); ok=false; } else setErr('expiry-error', false, 'pay-expiry');
+        if (cvv.value.length < 3)                       { setErr('cvv-error', true, 'pay-cvv');     ok=false; } else setErr('cvv-error', false, 'pay-cvv');
+        if (!pname.value.trim())                        { setErr('pay-name-error', true, 'pay-name'); ok=false; } else setErr('pay-name-error', false, 'pay-name');
+
+        if (!ok) return;
+
+        var btn = this; btn.classList.add('loading');
+        setTimeout(function(){
+            btn.classList.remove('loading');
+            document.getElementById('pay-step').style.display = 'none';
+            document.getElementById('vip-success').style.display = 'block';
+            setTimeout(function(){ window.location.href = 'user-dashboard.html'; }, 2800);
+        }, 2000);
+    });
+
+    /* ── Enter key ── */
+    document.querySelectorAll('.login-input, .pay-input').forEach(function(inp){
+        inp.addEventListener('keydown', function(e){
+            if (e.key === 'Enter') {
+                var payStep = document.getElementById('pay-step');
+                if (payStep.style.display === 'block') document.getElementById('pay-btn').click();
+                else document.getElementById('reg-btn').click();
+            }
+        });
+    });
+
+    /* ── i18n placeholder refresh ── */
+    function refreshPH(){
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){
+            var k = el.getAttribute('data-i18n-placeholder');
+            if (window.t) el.placeholder = window.t(k);
+        });
+    }
+    setTimeout(refreshPH, 400);
+    (function(){ var o=window.applyLang; window.applyLang=function(l){ if(o) o(l); refreshPH(); updatePayAmounts(); }; })();
+
+    /* Update payment amounts on language switch */
+    function updatePayAmounts() {
+        if (!currentPlan) return;
+        var lang = document.documentElement.lang === 'en' ? 'en' : 'ar';
+        var planAmounts = {
+            basic:  { ar: '19 ريال / شهرياً',  en: '19 SAR / month' },
+            plus:   { ar: '39 ريال / شهرياً',  en: '39 SAR / month' },
+            annual: { ar: '199 ريال / سنوياً', en: '199 SAR / year'  }
+        };
+        var currencies = { ar: 'ريال', en: 'SAR' };
+        var btnAmounts = { basic:'19', plus:'39', annual:'199' };
+        document.getElementById('pay-plan-amount').textContent = planAmounts[currentPlan][lang];
+        document.getElementById('pay-btn-amount').textContent  = '— ' + btnAmounts[currentPlan] + ' ' + currencies[lang];
+    }
+    </script>
+</body>
+</html>

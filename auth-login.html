@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - اِنطلاقة</title>
+    <link rel="icon" href="img/logo1.png">
+    <link id="bootstrap-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/i18n.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--dark, #0a2c1c);
+            font-family: 'Cairo', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 16px 40px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ── Floating bolts background ── */
+        #page-bolts {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .page-bolt {
+            position: absolute;
+            bottom: -100px;
+            right: var(--bx, 20%);
+            font-size: var(--bs, 2rem);
+            color: #7ee88a;
+            opacity: 0;
+            animation: pageBoltRise var(--bd, 10s) ease-in-out infinite var(--bdelay, 0s);
+            will-change: transform, opacity;
+        }
+        @keyframes pageBoltRise {
+            0%   { transform: translateY(0) rotate(var(--br,-10deg)) scale(1);    opacity: 0; }
+            10%  { opacity: var(--bo, 0.07); }
+            82%  { opacity: var(--bo, 0.07); }
+            100% { transform: translateY(-110vh) rotate(calc(var(--br,-10deg) + 25deg)) scale(0.7); opacity: 0; }
+        }
+
+        /* ── Back button ── */
+        .back-home-btn {
+            position: fixed;
+            top: 14px;
+            inset-inline-start: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff !important;
+            padding: 7px 16px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            z-index: 1050;
+            white-space: nowrap;
+        }
+        .back-home-btn:hover { background: #fff; color: var(--dark) !important; }
+        [dir="ltr"] .back-arrow { transform: scaleX(-1); }
+
+        /* ── Logo area ── */
+        .login-logo {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 16px rgba(52,142,56,0.5));
+            margin-bottom: 8px;
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+        @keyframes logoFloat {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-6px); }
+        }
+        .login-brand {
+            color: #7ee88a;
+            font-weight: 900;
+            font-size: 1.05rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 4px;
+        }
+
+        /* ── Card ── */
+        .login-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255,255,255,0.055);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(52,142,56,0.28);
+            border-radius: 28px;
+            padding: 40px 36px 36px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07);
+            text-align: center;
+        }
+        /* top glow accent */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 12%; right: 12%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, rgba(126,232,138,0.55), transparent);
+            border-radius: 2px;
+        }
+
+        .login-title {
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.35rem;
+            margin-bottom: 6px;
+        }
+        .login-subtitle {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.82rem;
+            margin-bottom: 28px;
+        }
+
+        /* ── Input groups ── */
+        .field-wrap {
+            position: relative;
+            margin-bottom: 16px;
+            text-align: start;
+        }
+        .field-label {
+            display: block;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+        .field-input-wrap {
+            position: relative;
+        }
+        .field-input-wrap .field-icon {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            inset-inline-start: 14px;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.85rem;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .login-input {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.92rem;
+            padding: 12px 44px;
+            outline: none;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+        }
+        .login-input::placeholder { color: rgba(255,255,255,0.28); }
+        .login-input:focus {
+            border-color: rgba(126,232,138,0.5);
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 0 3px rgba(126,232,138,0.08);
+        }
+        .login-input:focus ~ .field-icon,
+        .field-input-wrap:focus-within .field-icon { color: #7ee88a; }
+        .login-input.input-error { border-color: rgba(244,67,54,0.55); }
+
+        /* Password toggle */
+        .pw-toggle {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            inset-inline-end: 14px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.35);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.2s;
+        }
+        .pw-toggle:hover { color: #7ee88a; }
+
+        /* Error message */
+        .field-error {
+            color: #ef9a9a;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: none;
+        }
+        .field-error.show { display: block; }
+
+        /* Forgot password */
+        .forgot-link {
+            display: block;
+            text-align: end;
+            font-size: 0.78rem;
+            color: rgba(126,232,138,0.75);
+            text-decoration: none;
+            margin-top: -6px;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .forgot-link:hover { color: #7ee88a; }
+
+        /* ── Login button ── */
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #348E38, #2d7a31);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            padding: 13px 24px;
+            cursor: pointer;
+            box-shadow: 0 6px 22px rgba(52,142,56,0.4);
+            transition: transform 0.22s, box-shadow 0.22s, opacity 0.22s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(52,142,56,0.55); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn.loading { opacity: 0.7; pointer-events: none; }
+        .login-btn .btn-spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .login-btn.loading .btn-spinner { display: inline-block; }
+        .login-btn.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Divider ── */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.78rem;
+        }
+        .or-divider::before, .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ── Telegram quick-login ── */
+        .tg-login-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: rgba(41,182,246,0.1);
+            border: 1px solid rgba(41,182,246,0.3);
+            border-radius: 50px;
+            color: #29b6f6 !important;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 11px 24px;
+            text-decoration: none;
+            transition: background 0.25s, border-color 0.25s, transform 0.22s;
+            margin-bottom: 24px;
+        }
+        .tg-login-btn:hover {
+            background: rgba(41,182,246,0.18);
+            border-color: rgba(41,182,246,0.5);
+            transform: translateY(-2px);
+        }
+
+        /* ── Success state ── */
+        .login-success {
+            display: none;
+            padding: 10px 0 4px;
+        }
+        .login-success i {
+            font-size: 3rem;
+            color: #7ee88a;
+            margin-bottom: 12px;
+            display: block;
+            animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes popIn {
+            0%   { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1);   opacity: 1; }
+        }
+        .login-success h4 { color: #fff; font-weight: 900; font-size: 1.1rem; }
+        .login-success p  { color: rgba(255,255,255,0.55); font-size: 0.85rem; }
+
+        /* footer note */
+        .login-footer-note {
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        .login-footer-note a { color: rgba(126,232,138,0.6); text-decoration: none; }
+        .login-footer-note a:hover { color: #7ee88a; }
+
+        /* Social grid */
+        .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .social-btn {
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            border-radius: 12px; padding: 10px 12px; font-family: 'Cairo', sans-serif;
+            font-weight: 700; font-size: 0.82rem; cursor: pointer; border: 1px solid;
+            transition: transform 0.2s, opacity 0.2s; white-space: nowrap;
+        }
+        .social-btn:hover { transform: translateY(-2px); opacity: 0.88; }
+        .social-btn i { font-size: 1rem; }
+        .google-btn { background: rgba(255,255,255,0.9); border-color: rgba(255,255,255,0.4); color: #333; }
+        .apple-btn  { background: rgba(10,10,10,0.85);   border-color: rgba(255,255,255,0.15); color: #fff; }
+        .x-btn      { background: rgba(0,0,0,0.75);      border-color: rgba(255,255,255,0.15); color: #fff; }
+        .fb-btn     { background: rgba(24,119,242,0.18); border-color: rgba(24,119,242,0.4);   color: #5b9bef; }
+        /* Toast */
+        .toast-msg {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(15,66,41,0.95); border: 1px solid rgba(52,142,56,0.4);
+            color: #fff; border-radius: 30px; padding: 10px 24px; font-size: 0.85rem;
+            font-weight: 700; white-space: nowrap; backdrop-filter: blur(10px);
+            opacity: 0; transition: all 0.35s; z-index: 2000; pointer-events: none;
+        }
+        .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 480px) {
+            .login-card { padding: 32px 22px 28px; border-radius: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Bolts -->
+    <div id="page-bolts"></div>
+    <div class="toast-msg" id="toast"></div>
+
+    <!-- Lang toggle -->
+    <button id="lang-toggle" class="lang-toggle-btn" onclick="toggleLang()" aria-label="Toggle language">
+        <span data-i18n="toggle_label">EN</span>
+        <i class="fa-solid fa-globe"></i>
+    </button>
+
+    <!-- Back -->
+    <a href="index.html" class="back-home-btn" onclick="event.preventDefault(); history.back();">
+        <i class="fa-solid fa-chevron-right back-arrow"></i>
+        <span data-i18n="back_home">الرئيسية</span>
+    </a>
+
+    <!-- ═══════════════ CARD ═══════════════ -->
+    <div class="login-card">
+
+        <!-- Logo -->
+        <a href="index.html"><img src="img/logo1.png" class="login-logo" alt="اِنطلاقة" style="cursor:pointer;"></a>
+        <div class="login-brand">⚡ اِنطلاقة · HPC</div>
+
+        <!-- Form section -->
+        <div id="login-form-section">
+            <h1 class="login-title" data-i18n="login_title">تسجيل الدخول</h1>
+            <p class="login-subtitle" data-i18n="login_subtitle">أهلاً بك — سجّل دخولك للوصول إلى لوحتك</p>
+
+            <!-- Username / Email -->
+            <div class="field-wrap">
+                <label class="field-label" for="login-user" data-i18n="login_user_label">اسم المستخدم أو البريد</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input type="text" id="login-user" class="login-input"
+                           data-i18n-placeholder="login_user_ph" placeholder="أدخل اسم المستخدم أو البريد">
+                    <span class="field-error" id="user-error" data-i18n="login_user_error">هذا الحقل مطلوب</span>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="field-wrap">
+                <label class="field-label" for="login-pass" data-i18n="login_pass_label">كلمة المرور</label>
+                <div class="field-input-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="login-pass" class="login-input"
+                           data-i18n-placeholder="login_pass_ph" placeholder="أدخل كلمة المرور">
+                    <button class="pw-toggle" id="pw-toggle" type="button" aria-label="Toggle password visibility">
+                        <i class="fa-solid fa-eye" id="pw-eye"></i>
+                    </button>
+                    <span class="field-error" id="pass-error" data-i18n="login_pass_error">هذا الحقل مطلوب</span>
+                </div>
+            </div>
+
+            <!-- Forgot -->
+            <a href="forgot-password.html" class="forgot-link" data-i18n="login_forgot">نسيت كلمة المرور؟</a>
+
+            <!-- Login btn -->
+            <button class="login-btn" id="login-btn" type="button">
+                <span class="btn-spinner"></span>
+                <span class="btn-text">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span data-i18n="login_btn">دخول</span>
+                </span>
+            </button>
+
+            <!-- Divider -->
+            <div class="or-divider">
+                <span data-i18n="login_or">أو</span>
+            </div>
+
+            <!-- Social grid -->
+            <div class="social-grid">
+                <button class="social-btn google-btn" onclick="socialToast()"><i class="fa-brands fa-google"></i> Google</button>
+                <button class="social-btn apple-btn"  onclick="socialToast()"><i class="fa-brands fa-apple"></i> Apple</button>
+                <button class="social-btn x-btn"      onclick="socialToast()"><i class="fa-brands fa-x-twitter"></i> X</button>
+                <button class="social-btn fb-btn"     onclick="socialToast()"><i class="fa-brands fa-facebook"></i> Facebook</button>
+            </div>
+
+            <!-- Telegram -->
+            <a href="https://t.me/HPC_earning" target="_blank" rel="noopener" class="tg-login-btn">
+                <i class="fa-brands fa-telegram" style="font-size:1.15em;"></i>
+                <span data-i18n="login_tg">مجتمع تليجرام</span>
+            </a>
+
+            <p style="color:rgba(255,255,255,0.3);font-size:0.75rem;margin:0;">
+                <span data-i18n="login_no_account">ليس لديك حساب؟</span>
+                <a href="auth-register.html" style="color:rgba(126,232,138,0.7);text-decoration:none;" data-i18n="reg_btn"> إنشاء حساب</a>
+            </p>
+        </div>
+
+        <!-- Success state -->
+        <div class="login-success" id="login-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <h4 data-i18n="login_success_title">مرحباً بك! 🎉</h4>
+            <p data-i18n="login_success_body">تم تسجيل دخولك بنجاح. جارٍ التوجيه...</p>
+        </div>
+
+    </div>
+
+    <!-- Footer note -->
+    <p class="login-footer-note">
+        <span data-i18n="footer_rights">⚡ جميع الحقوق محفوظة لفريق اِنطلاقة-HPC</span>
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    /* ── Spawn bolts ── */
+    (function() {
+        var bg = document.getElementById('page-bolts');
+        [
+            { bs:'2.6rem', bx:'5%',  bd:'9s',   bdelay:'-3s',   br:'-12deg', bo:0.07 },
+            { bs:'1.4rem', bx:'15%', bd:'13s',  bdelay:'-7s',   br:'8deg',   bo:0.06 },
+            { bs:'3.8rem', bx:'26%', bd:'8s',   bdelay:'-2s',   br:'-20deg', bo:0.07 },
+            { bs:'1.8rem', bx:'39%', bd:'11s',  bdelay:'-5s',   br:'14deg',  bo:0.06 },
+            { bs:'3.0rem', bx:'52%', bd:'7.5s', bdelay:'-1s',   br:'-6deg',  bo:0.08 },
+            { bs:'1.2rem', bx:'65%', bd:'14s',  bdelay:'-9s',   br:'22deg',  bo:0.05 },
+            { bs:'4.2rem', bx:'76%', bd:'10s',  bdelay:'-4s',   br:'-26deg', bo:0.07 },
+            { bs:'2.0rem', bx:'87%', bd:'8.5s', bdelay:'-6s',   br:'5deg',   bo:0.06 },
+            { bs:'1.6rem', bx:'95%', bd:'12s',  bdelay:'-8s',   br:'-16deg', bo:0.06 },
+        ].forEach(function(c) {
+            var el = document.createElement('i');
+            el.className = 'fa-solid fa-bolt page-bolt';
+            el.style.cssText = '--bx:'+c.bx+';--bs:'+c.bs+';--bd:'+c.bd+';--bdelay:'+c.bdelay+';--br:'+c.br+';--bo:'+c.bo+';';
+            bg.appendChild(el);
+        });
+    })();
+
+    /* ── Social toast ── */
+    function socialToast() {
+        var msg = document.documentElement.lang === 'en' ? 'Coming soon! 🚀' : 'قريباً — هذه الميزة تحت التطوير 🚀';
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function(){ t.classList.remove('show'); }, 2800);
+    }
+
+    /* ── Password show/hide ── */
+    document.getElementById('pw-toggle').addEventListener('click', function() {
+        var inp = document.getElementById('login-pass');
+        var eye = document.getElementById('pw-eye');
+        if (inp.type === 'password') {
+            inp.type = 'text';
+            eye.className = 'fa-solid fa-eye-slash';
+        } else {
+            inp.type = 'password';
+            eye.className = 'fa-solid fa-eye';
+        }
+    });
+
+    /* ── Validation & submit ── */
+    document.getElementById('login-btn').addEventListener('click', function() {
+        var user = document.getElementById('login-user');
+        var pass = document.getElementById('login-pass');
+        var uErr = document.getElementById('user-error');
+        var pErr = document.getElementById('pass-error');
+        var ok = true;
+
+        // Reset errors
+        user.classList.remove('input-error');
+        pass.classList.remove('input-error');
+        uErr.classList.remove('show');
+        pErr.classList.remove('show');
+
+        if (!user.value.trim()) {
+            user.classList.add('input-error');
+            uErr.classList.add('show');
+            ok = false;
+        }
+        if (!pass.value.trim()) {
+            pass.classList.add('input-error');
+            pErr.classList.add('show');
+            ok = false;
+        }
+        if (!ok) return;
+
+        // Simulate login
+        var btn = this;
+        btn.classList.add('loading');
+        setTimeout(function() {
+            btn.classList.remove('loading');
+            document.getElementById('login-form-section').style.display = 'none';
+            document.getElementById('login-success').style.display = 'block';
+            setTimeout(function() { window.location.href = 'user-dashboard.html'; }, 2200);
+        }, 1600);
+    });
+
+    /* ── Enter key support ── */
+    ['login-user','login-pass'].forEach(function(id) {
+        document.getElementById(id).addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('login-btn').click();
+        });
+    });
+
+    /* ── i18n placeholder refresh ── */
+    function refreshPlaceholders() {
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+            var key = el.getAttribute('data-i18n-placeholder');
+            if (window.t) el.placeholder = window.t(key);
+        });
+    }
+    setTimeout(refreshPlaceholders, 400);
+
+    (function() {
+        var _orig = window.applyLang;
+        window.applyLang = function(lang) {
+            if (_orig) _orig(lang);
+            refreshPlaceholders();
+        };
+    })();
+    </script>
+</body>
+</html>
